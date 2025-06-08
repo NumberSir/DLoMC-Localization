@@ -73,6 +73,4 @@ __all__ = [
 ]
 
 if __name__ == '__main__':
-    from pprint import pprint
-
-    pprint(Settings().model_dump())
+    print(Settings().model_dump())

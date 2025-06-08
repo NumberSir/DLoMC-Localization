@@ -11,7 +11,7 @@ def main():
     project = Project()
     project.clean(settings.filepath.root / settings.filepath.tmp)
     project.converter.convert()
-    # project.restorer.restore()
+    project.restorer.restore()
     end = time.time()
     return end - start
 

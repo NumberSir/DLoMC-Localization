@@ -3,7 +3,11 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class ParatranzModel(BaseModel):
+class _BaseModelAllowExtra(BaseModel, extra='allow'):
+    ...
+
+
+class ParatranzModel(_BaseModelAllowExtra):
     """json schema for files uploaded to Paratranz"""
     """primary key"""
     key: str
@@ -16,37 +20,40 @@ class ParatranzModel(BaseModel):
     """untranslated, translated, checked, ..."""
     stage: Optional[int] = Field(default=None)
 
+    def untranslated(self) -> bool:
+        return not self.translation or self.translation == self.original
+
 
 """ MAP """
-class GameMapUnitModel(BaseModel):
+class GameMapUnitModel(_BaseModelAllowExtra):
     code: int
     indent: int
     parameters: list
 
 
-class GameMapPageModel(BaseModel):
+class GameMapPageModel(_BaseModelAllowExtra):
     list: list[GameMapUnitModel]
 
 
-class GameMapEventModel(BaseModel):
+class GameMapEventModel(_BaseModelAllowExtra):
     id: int
     name: str
     pages: list[GameMapPageModel]
 
 
-class GameMapModel(BaseModel):
+class GameMapModel(_BaseModelAllowExtra):
     events: list[GameMapEventModel | None]
 
 
 """ SYSTEM """
-class GameSystemTermsModel(BaseModel):
+class GameSystemTermsModel(_BaseModelAllowExtra):
     basic: list[str]
     commands: list[str | None]
     params: list[str]
     messages: dict[str, str]
 
 
-class GameSystemModel(BaseModel):
+class GameSystemModel(_BaseModelAllowExtra):
     gameTitle: str
     locale: str
     skillTypes: list[str]
@@ -54,26 +61,26 @@ class GameSystemModel(BaseModel):
 
 
 """ ITEMS """
-class GameItemModel(BaseModel):
+class GameItemModel(_BaseModelAllowExtra):
     id: int
     description: str
     name: str
 
 
 """ SKILLS """
-class GameSkillModel(BaseModel):
+class GameSkillModel(_BaseModelAllowExtra):
     id: int
     description: str
     name: str
 
 
 """ COMMONEVENTS """
-class GameCommonEventUnitModel(BaseModel):
+class GameCommonEventUnitModel(_BaseModelAllowExtra):
     code: int
     parameters: list
 
 
-class GameCommonEventModel(BaseModel):
+class GameCommonEventModel(_BaseModelAllowExtra):
     id: int
     name: str
     list: list[GameCommonEventUnitModel]
