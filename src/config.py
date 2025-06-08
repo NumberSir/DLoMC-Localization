@@ -48,8 +48,17 @@ class GitHubSettings(BaseSettings):
     access_token: str = Field(default="")
 
 
+class ParatranzSettings(BaseSettings):
+    """About Paratranz"""
+    model_config = SettingsConfigDict(env_prefix='PARATRANZ_')
+
+    project_id: str = Field(default="")
+    token: str = Field(default="")
+
+
 class Settings(BaseSettings):
     """Main settings"""
+    paratranz: ParatranzSettings = ParatranzSettings()
     github: GitHubSettings = GitHubSettings()
     project: ProjectSettings = ProjectSettings()
     filepath: FilepathSettings = FilepathSettings()

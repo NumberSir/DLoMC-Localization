@@ -70,6 +70,12 @@
    ### GITHUB ###
    # !!!必填字段!!!
    GITHUB_ACCESS_TOKEN=
+
+   ### PARATRANZ ###
+   # !!!必填字段!!!
+   PARATRANZ_PROJECT_ID=
+   # !!!必填字段!!!
+   PARATRANZ_TOKEN=
    ```
 5. 运行根目录下的 `main.py`
    ```shell
