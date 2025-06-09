@@ -12,6 +12,7 @@ def main():
     project.clean(settings.filepath.root / settings.filepath.tmp)
     project.converter.convert()
     project.restorer.restore()
+    project.tweaker.tweak()
     end = time.time()
     return end - start
 

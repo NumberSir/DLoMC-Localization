@@ -86,6 +86,14 @@ class GameCommonEventModel(_BaseModelAllowExtra):
     list: list[GameCommonEventUnitModel]
 
 
+""" PLUGINS """
+class GamePluginModel(_BaseModelAllowExtra):
+    name: str
+    status: bool
+    description: str
+    parameters: dict
+
+
 
 __all__ = [
     'ParatranzModel',
@@ -103,4 +111,6 @@ __all__ = [
 
     "GameCommonEventUnitModel",
     "GameCommonEventModel",
+
+    "GamePluginModel",
 ]
