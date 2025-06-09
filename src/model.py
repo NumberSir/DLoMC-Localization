@@ -18,7 +18,7 @@ class ParatranzModel(_BaseModelAllowExtra):
     """as reference"""
     context: str = Field(default='')
     """untranslated, translated, checked, ..."""
-    stage: Optional[int] = Field(default=None)
+    stage: Optional[int] = Field(default=0)
 
     def untranslated(self) -> bool:
         return not self.translation or self.translation == self.original
