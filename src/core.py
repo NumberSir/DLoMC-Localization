@@ -1013,7 +1013,7 @@ class Tweaker:
             content = content.replace(k, v, 1)
 
         os.makedirs(DIR_RESULT / "www" / "js" / "plugins", exist_ok=True)
-        with open(DIR_RESULT / "www" / "js" / "plugins" / "YEP_MessageCore.js", encoding="utf-8") as fp:
+        with open(DIR_RESULT / "www" / "js" / "plugins" / "YEP_MessageCore.js", "w", encoding="utf-8") as fp:
             fp.write(content)
         self.logger.success("Tweak message core successfully.")
 
