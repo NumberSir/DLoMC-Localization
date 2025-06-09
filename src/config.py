@@ -11,7 +11,7 @@ class ProjectSettings(BaseSettings):
     """About this project"""
     model_config = SettingsConfigDict(env_prefix="PROJECT_")
 
-    name: str = Field(default="ModrinthApi")
+    name: str = Field(default="DLoMC-Localization")
     version: str = Field(default="0.0.1")
     username: str = Field(default="Anonymous")
     email: str = Field(default="anonymous@email.com")
@@ -41,6 +41,7 @@ class GameSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="GAME_")
 
     name: str = Field(default="Daily Lives of My Countryside")
+    name_translation: str = Field(default="我的乡村日常生活")
     version: str = Field(default="")
 
 
