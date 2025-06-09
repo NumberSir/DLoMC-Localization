@@ -6,8 +6,10 @@ import shutil
 from contextlib import suppress
 from pathlib import Path
 from typing import Callable
+from xml.etree.ElementTree import Element, ElementTree
 
 from loguru._logger import Logger
+from lxml import etree
 from pydantic import BaseModel
 
 from src.config import settings
@@ -802,3 +804,33 @@ class Restorer:
     @property
     def logger(self) -> Logger:
         return self._logger
+
+
+class Special:
+    """tiny tweaks"""
+    def __init__(self):
+        ...
+
+    def tweak_game_title(self):
+        with open(GAME_ROOT / "www" / "index.html", encoding="utf-8") as fp:
+            root: Element = etree.HTML(fp.read())
+
+        newtitle = etree.Element("title")
+        newtitle.text = settings.game.name_translation
+
+        head = root.find("head").__copy__()
+        head.remove(head.find("title"))
+        head.append(newtitle)
+
+        root.remove(root.find("head"))
+        root.insert(0, head,)
+
+        tree: ElementTree = etree.ElementTree(root)
+        tree.write(DIR_RESULT / "www" / "index.html", encoding="utf-8", method="html", pretty_print=True)
+
+
+
+if __name__ == '__main__':
+    special = Special()
+    special.tweak_game_title()
+
