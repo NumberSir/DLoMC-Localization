@@ -28,9 +28,12 @@ class FilepathSettings(BaseSettings):
     tmp: Path = Field(default=Path("data/tmp"))
     log: Path = Field(default=Path("data/log"))
     resource: Path = Field(default=Path("resource"))
-    convert: Path = Field(default=Path("resource/paratranz/convert"))
-    download: Path = Field(default=Path("resource/paratranz/download"))
-    result: Path = Field(default=Path("resource/result"))
+    original: Path = Field(default=Path("resource/00-original"))
+    translation: Path = Field(default=Path("resource/01-translation"))
+    convert: Path = Field(default=Path("resource/02-paratranz/convert"))
+    download: Path = Field(default=Path("resource/02-paratranz/download"))
+    result: Path = Field(default=Path("resource/03-result"))
+    special: Path = Field(default=Path("resource/04-special-file"))
 
 
 class GameSettings(BaseSettings):

@@ -15,11 +15,12 @@ from src.enum import *
 from src.log import logger
 from src.model import *
 
-GAME_ROOT = settings.filepath.root / settings.filepath.resource / f"{settings.game.name} v{settings.game.version}"
-DIR_TRANSLATION = settings.filepath.root / settings.filepath.resource / "translation"
+GAME_ROOT = settings.filepath.root / settings.filepath.original / f"{settings.game.name} v{settings.game.version}"
+DIR_TRANSLATION = settings.filepath.root / settings.filepath.translation
 DIR_CONVERT = settings.filepath.root / settings.filepath.convert
 DIR_DOWNLOAD = settings.filepath.root / settings.filepath.download
 DIR_RESULT = settings.filepath.root / settings.filepath.result
+DIR_SPECIAL = settings.filepath.root / settings.filepath.special
 
 FileContent = str | list | dict
 
@@ -547,7 +548,7 @@ class Restorer:
                     continue
 
                 elif isinstance(model, list):
-                    datas = [m.model_dump() for m in model]
+                    datas = [m.model_dump() if m is not None else None for m in model]
 
                 else:
                     datas = model.model_dump()
@@ -555,6 +556,12 @@ class Restorer:
                 with open(DIR_RESULT / result_filepath, "w", encoding="utf-8") as fp:
                     json.dump(datas, fp, ensure_ascii=False)
                 self.logger.bind(filepath=relative_filepath).debug("Restoring file successfully.")
+
+        self.restore_special()
+
+    def restore_special(self):
+        shutil.copytree(DIR_SPECIAL, DIR_RESULT, dirs_exist_ok=True)
+        self.logger.debug("Restoring special files successfully.")
 
     def _restore_general(self, filepath: Path, type_: FileType, process_function: Callable[..., list[BaseModel]|BaseModel|str], **kwargs) -> list[BaseModel] | BaseModel | str:
         relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
@@ -687,7 +694,7 @@ class Restorer:
 
     def _restore_items(self, filepath: Path, type_: FileType) -> list[BaseModel]:
         def _process(**kwargs):
-            original: list[GameItemModel] = [GameItemModel.model_validate(_) for _ in kwargs["original"] if _]
+            original: list[GameItemModel] = [GameItemModel.model_validate(_) if _ is not None else _ for _ in kwargs["original"]]
             downloads: list[ParatranzModel] = [ParatranzModel.model_validate(_) for _ in kwargs["download"]]
 
             for model in downloads:
@@ -698,6 +705,9 @@ class Restorer:
                 item_id = int(item_id)
 
                 for idx, item in enumerate(original):
+                    if item is None:
+                        continue
+
                     if item.id != item_id:
                         continue
 
@@ -718,7 +728,7 @@ class Restorer:
 
     def _restore_skills(self, filepath: Path, type_: FileType) -> list[BaseModel]:
         def _process(**kwargs):
-            original: list[GameSkillModel] = [GameSkillModel.model_validate(_) for _ in kwargs["original"] if _]
+            original: list[GameSkillModel] = [GameSkillModel.model_validate(_) if _ is not None else _ for _ in kwargs["original"]]
             downloads: list[ParatranzModel] = [ParatranzModel.model_validate(_) for _ in kwargs["download"]]
 
             for model in downloads:
@@ -729,6 +739,9 @@ class Restorer:
                 skill_id = int(skill_id)
 
                 for idx, skill in enumerate(original):
+                    if skill is None:
+                        continue
+
                     if skill.id != skill_id:
                         continue
 
@@ -747,72 +760,9 @@ class Restorer:
             process_function=_process,
         )
 
-    def _convert_map(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
-        """
-        json, similar to common events
-        :param filepath: map filepath
-        :param type_: file type
-        :return: array of ParatranzModel
-        """
-        def _process(**kwargs):
-            original: GameMapModel = GameMapModel.model_validate(kwargs["original"])
-            translation_flag = kwargs["translation_flag"]
-            translation: GameMapModel = GameMapModel.model_validate(kwargs["translation"]) if translation_flag else None
-
-            models = []
-            for idx_event, event in enumerate(original.events):
-                if event is None:
-                    continue
-                event_id = event.id
-                event_name = event.name
-
-                for idx_page, page in enumerate(event.pages):
-                    flag_conversation, flag_choice = False, False
-                    for idx_unit, unit in enumerate(page.list):
-                        if Code.DIALOG == unit.code:
-                            original_value = unit.parameters[0]  # str
-                            translation_value = translation.events[idx_event].pages[idx_page].list[idx_unit].parameters[0] if translation_flag else ""
-                            if not flag_conversation:
-                                flag_conversation = True
-                                idx_ = idx_unit
-                                context_conversation = ""
-                                while Code.DIALOG == page.list[idx_:][0].code:
-                                    context_conversation += f"\n{page.list[idx_:][0].parameters[0]}"
-                                    idx_ += 1
-                        elif Code.CHOICE == unit.code:
-                            original_value = "\n".join(unit.parameters[0])  # list[str]
-                            translation_value = "\n".join(translation.events[idx_event].pages[idx_page].list[idx_unit].parameters[0]) if translation_flag else ""
-                            if not flag_choice:
-                                flag_choice = True
-                                idx_ = idx_unit
-                                context_choice = ""
-                                while Code.CHOICE == page.list[idx_:][0].code:
-                                    context_choice += f"\n{' | '.join(page.list[idx_:][0].parameters[0])}"
-                                    idx_ += 1
-                        else:
-                            flag_conversation, flag_choice = False, False
-                            continue
-
-                        models.append(
-                            ParatranzModel(
-                                key=f"{event_id} | {event_name} | {idx_page} | {idx_unit} | {unit.code}",
-                                original=original_value,
-                                translation=translation_value if translation_value != original_value else "",
-                                context=context_conversation.strip() if Code.DIALOG == unit.code else context_choice.strip(),
-                            )
-                        )
-
-            return models
-
-        return self._convert_general(
-            filepath=filepath,
-            type_=type_,
-            process_function=_process,
-        )
-
     def _restore_common_events(self, filepath: Path, type_: FileType) -> list[BaseModel]:
         def _process(**kwargs):
-            original: list[GameCommonEventModel] = [GameCommonEventModel.model_validate(_) for _ in kwargs["original"] if _]
+            original: list[GameCommonEventModel] = [GameCommonEventModel.model_validate(_) if _ is not None else _ for _ in kwargs["original"]]
             downloads: list[ParatranzModel] = [ParatranzModel.model_validate(_) for _ in kwargs["download"]]
 
             for model in downloads:
@@ -824,6 +774,9 @@ class Restorer:
                 event_name = event_name.strip()
 
                 for idx_event, event in enumerate(original):
+                    if event is None:
+                        continue
+
                     if any((event_id != event.id, event_name != event.name)):
                         continue
 
