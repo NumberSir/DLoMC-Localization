@@ -86,8 +86,8 @@ class Project:
 
         if purename.startswith("Map"):
             if purename == "MapInfos":
-                self.logger.bind(filepath=filepath).debug(f"Type: {FileType.MAPINFO.name}")
-                return FileType.MAPINFO
+                self.logger.bind(filepath=filepath).debug(f"Type: {FileType.MAPINFOS.name}")
+                return FileType.MAPINFOS
             if "Copy" not in purename:
                 self.logger.bind(filepath=filepath).debug(f"Type: {FileType.MAP.name}")
                 return FileType.MAP
@@ -112,7 +112,7 @@ class Project:
         match type_:
             case FileType.QUEST | FileType.RECIPES:  # txt
                 return fp.read()
-            case FileType.MAP | FileType.SYSTEM | FileType.MAPINFO | FileType.ITEMS | FileType.SKILLS | FileType.COMMON_EVENTS:
+            case FileType.MAP | FileType.SYSTEM | FileType.MAPINFOS | FileType.ITEMS | FileType.SKILLS | FileType.COMMON_EVENTS:
                 return json.load(fp)
             case _:
                 raise TypeError
@@ -166,6 +166,8 @@ class Converter:
                         models = self._convert_skills(filepath, file_type)
                     case FileType.COMMON_EVENTS:
                         models = self._convert_common_events(filepath, file_type)
+                    case FileType.MAPINFOS:
+                        models = self._convert_map_infos(filepath, file_type)
                     # TXT
                     case FileType.QUEST:
                         models = self._convert_quest(filepath, file_type)
@@ -500,6 +502,42 @@ class Converter:
             process_function=_process,
         )
 
+    def _convert_map_infos(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
+        """
+        special json
+        :param filepath: map infos filepath
+        :param type_: file type
+        :return: array of ParatranzModel
+        """
+        def _process(**kwargs):
+            original: list[GameMapInfoModel | None] = [GameMapInfoModel.model_validate(_) if _ is not None else None for _ in kwargs["original"]]
+            translation_flag = kwargs["translation_flag"]
+            translation: list[GameMapInfoModel | None] = [GameMapInfoModel.model_validate(_) if _ is not None else None for _ in kwargs["translation"]]
+
+            models = []
+            for idx, info in enumerate(original):
+                if info is None:
+                    continue
+
+                translation_value = ""
+                if translation_flag:
+                    translation_value = [
+                        info_.name
+                        for info_ in translation
+                        if info_ is not None and info_.id == info.id
+                    ]
+                    translation_value = translation_value[0] if translation_value else ""
+                    translation_value = translation_value if translation_value != info.name else ""
+                models.append(ParatranzModel(key=info.id.__str__(), original=info.name, translation=translation_value))
+
+            return models
+
+        return self._convert_general(
+            filepath=filepath,
+            type_=type_,
+            process_function=_process,
+        )
+
     @property
     def logger(self) -> Logger:
         return self._logger
@@ -536,6 +574,8 @@ class Restorer:
                         model = self._restore_skills(filepath, file_type)
                     case FileType.COMMON_EVENTS:
                         model = self._restore_common_events(filepath, file_type)
+                    case FileType.MAPINFOS:
+                        model = self._restore_map_infos(filepath, file_type)
                     # TXT
                     case FileType.QUEST:
                         model = self._restore_quest(filepath, file_type)
@@ -805,6 +845,28 @@ class Restorer:
             process_function=_process,
         )
 
+    def _restore_map_infos(self, filepath: Path, type_: FileType) -> BaseModel:
+        def _process(**kwargs):
+            original: list[GameMapInfoModel] = [GameMapInfoModel.model_validate(_) if _ is not None else _ for _ in kwargs["original"]]
+            downloads: list[ParatranzModel] = [ParatranzModel.model_validate(_) for _ in kwargs["download"]]
+
+            for model in downloads:
+                if model.untranslated():
+                    continue
+
+                for idx, info in enumerate(original):
+                    if info is None:
+                        continue
+                    if info.id != model.id:
+                        continue
+                    original[idx].name = model.translation
+            return original
+
+        return self._restore_general(
+            filepath=filepath,
+            type_=type_,
+            process_function=_process,
+        )
 
     @property
     def logger(self) -> Logger:

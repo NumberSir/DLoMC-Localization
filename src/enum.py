@@ -14,7 +14,7 @@ class FileType(Enum):
 
     MAP = auto()
     SYSTEM = auto()
-    MAPINFO = auto()
+    MAPINFOS = auto()
     ITEMS = auto()
     SKILLS = auto()
     COMMON_EVENTS = auto()

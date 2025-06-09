@@ -86,6 +86,12 @@ class GameCommonEventModel(_BaseModelAllowExtra):
     list: list[GameCommonEventUnitModel]
 
 
+""" MAPINFOS """
+class GameMapInfoModel(_BaseModelAllowExtra):
+    id: int
+    name: str
+
+
 """ PLUGINS """
 class GamePluginModel(_BaseModelAllowExtra):
     name: str
@@ -111,6 +117,8 @@ __all__ = [
 
     "GameCommonEventUnitModel",
     "GameCommonEventModel",
+
+    "GameMapInfoModel",
 
     "GamePluginModel",
 ]
