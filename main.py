@@ -1,5 +1,6 @@
 import time
 
+from src import Paratranz
 from src.config import settings
 from src.core import Project
 from src.log import logger
@@ -11,6 +12,9 @@ def main():
     project = Project()
     project.clean(settings.filepath.root / settings.filepath.tmp)
     project.converter.convert()
+
+    paratranz = Paratranz()
+    paratranz.download()
     project.restorer.restore()
     project.tweaker.tweak()
     end = time.time()

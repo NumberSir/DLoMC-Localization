@@ -857,7 +857,7 @@ class Restorer:
                 for idx, info in enumerate(original):
                     if info is None:
                         continue
-                    if info.id != model.id:
+                    if info.id != int(model.key):
                         continue
                     original[idx].name = model.translation
             return original

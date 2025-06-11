@@ -12,7 +12,7 @@ from src.log import logger
 
 
 class Paratranz:
-    def __init__(self, client: httpx.Client):
+    def __init__(self, client: httpx.Client = httpx.Client()):
         self._logger = logger.bind(project_name="Paratranz")
         self._client = client
         self._base_url = "https://paratranz.cn/api"
@@ -63,10 +63,13 @@ class Paratranz:
         with ZipFile(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip") as zfp:
             zfp.extractall(settings.filepath.root / settings.filepath.tmp)
 
+        def _ignore(src: str, names: list[str]):
+            return ["旧"]
         shutil.copytree(
             settings.filepath.root / settings.filepath.tmp / "utf8",
             settings.filepath.root / settings.filepath.download,
-            dirs_exist_ok=True
+            dirs_exist_ok=True,
+            ignore=_ignore
         )
 
     @property
