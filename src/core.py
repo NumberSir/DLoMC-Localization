@@ -879,7 +879,7 @@ class Tweaker:
         self.logger.info("======= TWEAK START =======")
         self.tweak_game_title()
         self.tweak_game_plugins()
-        self.tweak_yep_message_core()
+        # self.tweak_yep_message_core()
 
     def tweak_game_title(self):
         with open(GAME_ROOT / "www" / "index.html", encoding="utf-8") as fp:
@@ -1058,22 +1058,29 @@ class Tweaker:
         plugin.parameters["Command Name"] = "致谢名单"
         return plugin
 
-    def tweak_yep_message_core(self):
-        """Auto line break support Chinese characters"""
-        with open(GAME_ROOT / "www" / "js" / "plugins" / "YEP_MessageCore.js", encoding="utf-8") as fp:
-            content = fp.read()
-
-        change_mapping = {
-            "if (this.checkWordWrap(textState)) return this.processNewLine(textState);": "if (this.checkWordWrap(textState)){textState.index-=1;return this.processNewLine(textState);}",
-            "if (textState.text[textState.index] === ' ') {var nextSpace = textState.text.indexOf(' ', textState.index + 1);var nextBreak = textState.text.indexOf('\n', textState.index + 1);if (nextSpace < 0) nextSpace = textState.text.length + 1;if (nextBreak > 0) nextSpace = Math.min(nextSpace, nextBreak);var word = textState.text.substring(textState.index, nextSpace);var size = this.textWidthExCheck(word);}": "var nextSpace = textState.index + 1;var nextBreak = textState.text.indexOf('\n', textState.index + 1);if (nextSpace < 0) nextSpace = textState.text.length + 1;if (nextBreak > 0) nextSpace = Math.min(nextSpace, nextBreak);var word = textState.text.substring(textState.index, nextSpace);var size = this.textWidthExCheck(word);"
-        }
-        for k, v in change_mapping.items():
-            content = content.replace(k, v, 1)
-
-        (DIR_RESULT / "www" / "js" / "plugins").mkdir(parents=True, exist_ok=True)
-        with open(DIR_RESULT / "www" / "js" / "plugins" / "YEP_MessageCore.js", "w", encoding="utf-8") as fp:
-            fp.write(content)
-        self.logger.success("Tweak message core successfully.")
+    # def tweak_yep_message_core(self):
+    #     """Auto line break support Chinese characters"""
+    #     with open(GAME_ROOT / "www" / "js" / "plugins" / "YEP_MessageCore.js", encoding="utf-8") as fp:
+    #         content = fp.read()
+    #
+    #     change_mapping = {
+    #         "if (this.checkWordWrap(textState)) return this.processNewLine(textState);": "if (this.checkWordWrap(textState)){textState.index-=1;return this.processNewLine(textState);}",
+    #         """if (textState.text[textState.index] === ' ') {
+    #   var nextSpace = textState.text.indexOf(' ', textState.index + 1);
+    #   var nextBreak = textState.text.indexOf('\n', textState.index + 1);
+    #   if (nextSpace < 0) nextSpace = textState.text.length + 1;
+    #   if (nextBreak > 0) nextSpace = Math.min(nextSpace, nextBreak);
+    #   var word = textState.text.substring(textState.index, nextSpace);
+    #   var size = this.textWidthExCheck(word);
+    # }""": "var nextSpace = textState.index + 1;var nextBreak = textState.text.indexOf('\n', textState.index + 1);if (nextSpace < 0) nextSpace = textState.text.length + 1;if (nextBreak > 0) nextSpace = Math.min(nextSpace, nextBreak);var word = textState.text.substring(textState.index, nextSpace);var size = this.textWidthExCheck(word);"
+    #     }
+    #     for k, v in change_mapping.items():
+    #         content = content.replace(k, v, 1)
+    #
+    #     (DIR_RESULT / "www" / "js" / "plugins").mkdir(parents=True, exist_ok=True)
+    #     with open(DIR_RESULT / "www" / "js" / "plugins" / "YEP_MessageCore.js", "w", encoding="utf-8") as fp:
+    #         fp.write(content)
+    #     self.logger.success("Tweak message core successfully.")
 
     @property
     def logger(self) -> Logger:
