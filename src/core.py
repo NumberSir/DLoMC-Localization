@@ -549,7 +549,7 @@ class Restorer:
     def restore(self):
         self.logger.info("")
         self.logger.info("======= RESTORE START =======")
-        DIR_DOWNLOAD.mkdir(exist_ok=True, parent=True)
+        DIR_DOWNLOAD.mkdir(exist_ok=True, parents=True)
         for filepath in DIR_DOWNLOAD.glob("**/*"):
             relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
             result_filepath = DIR_RESULT / relative_filepath.with_suffix("")
@@ -583,7 +583,7 @@ class Restorer:
                 self.logger.bind(filepath=relative_filepath).warning("Restoring file failed")
                 continue
 
-            (DIR_RESULT / relative_filepath).parent.mkdir(exist_ok=True, parent=True)
+            (DIR_RESULT / relative_filepath).parent.mkdir(exist_ok=True, parents=True)
             if isinstance(model, str):
                 with open(DIR_RESULT / result_filepath, "w", encoding="utf-8") as fp:
                     fp.write(model)
