@@ -1,6 +1,5 @@
 """Output infos during running."""
 import datetime
-import os
 import sys
 
 from loguru import logger as logger_
@@ -8,7 +7,7 @@ from loguru import logger as logger_
 from src.config import settings
 
 DIR_LOGS = settings.filepath.root / settings.filepath.log
-os.makedirs(DIR_LOGS, exist_ok=True)
+DIR_LOGS.mkdir(parents=True, exist_ok=True)
 
 
 def add_project_name(record):

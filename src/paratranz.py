@@ -1,5 +1,4 @@
 import contextlib
-import os
 import shutil
 from pathlib import Path
 from zipfile import ZipFile
@@ -37,8 +36,8 @@ class Paratranz:
 
     def download(self):
         self.logger.info("Starting to download translated files...")
-        os.makedirs(settings.filepath.root / settings.filepath.tmp, exist_ok=True)
-        os.makedirs(settings.filepath.root / settings.filepath.download, exist_ok=True)
+        (settings.filepath.root / settings.filepath.tmp).mkdir(parents=True, exist_ok=True)
+        (settings.filepath.root / settings.filepath.download).mkdir(parents=True, exist_ok=True)
         with contextlib.suppress(httpx.TimeoutException):
             self._trigger_export()
         self._download_artifacts()

@@ -1,6 +1,5 @@
 import io
 import json
-import os
 import re
 import shutil
 from contextlib import suppress
@@ -71,7 +70,7 @@ class Project:
         for filepath in filepaths:
             with suppress(FileNotFoundError):
                 shutil.rmtree(filepath)
-            os.makedirs(filepath, exist_ok=True)
+            filepath.mkdir(exist_ok=True, parents=True)
             self.logger.bind(filepath=filepath).debug("Filepath cleaned")
 
     def categorize(self, filepath: Path) -> FileType | None:
@@ -146,8 +145,7 @@ class Converter:
             GAME_ROOT / "www" / "data",
             GAME_ROOT / "www" / "quest"
         }:
-            for file in os.listdir(dir_):
-                filepath = dir_ / file
+            for filepath in dir_.iterdir():
                 relative_filepath = filepath.relative_to(GAME_ROOT)
                 file_type = Project().categorize(relative_filepath)
                 if not file_type:
@@ -183,7 +181,7 @@ class Converter:
                     continue
 
                 datas = [_.model_dump() for _ in models]
-                os.makedirs((DIR_CONVERT / relative_filepath).parent, exist_ok=True)
+                (DIR_CONVERT / relative_filepath).parent.mkdir(parents=True, exist_ok=True)
                 converted_filepath = relative_filepath.parent / f"{relative_filepath.name}.json"
                 with open(DIR_CONVERT / converted_filepath, "w", encoding="utf-8") as fp:
                     json.dump(datas, fp, ensure_ascii=False, indent=2)
@@ -551,58 +549,56 @@ class Restorer:
     def restore(self):
         self.logger.info("")
         self.logger.info("======= RESTORE START =======")
-        os.makedirs(DIR_DOWNLOAD, exist_ok=True)
-        for root, dirs, files in os.walk(DIR_DOWNLOAD):
-            for file in files:
-                filepath = Path(root) / file
-                relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
-                result_filepath = DIR_RESULT / relative_filepath.with_suffix("")
-                file_type = Project().categorize(result_filepath)
-                if not file_type:
+        DIR_DOWNLOAD.mkdir(exist_ok=True, parent=True)
+        for filepath in DIR_DOWNLOAD.glob("**/*"):
+            relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
+            result_filepath = DIR_RESULT / relative_filepath.with_suffix("")
+            file_type = Project().categorize(result_filepath)
+            if not file_type:
+                continue
+
+            self.logger.bind(filepath=relative_filepath).debug("Restoring file")
+            match file_type:
+                # JSON
+                case FileType.MAP:
+                    model = self._restore_map(filepath, file_type)
+                case FileType.SYSTEM:
+                    model = self._restore_system(filepath, file_type)
+                case FileType.ITEMS:
+                    model = self._restore_items(filepath, file_type)
+                case FileType.SKILLS:
+                    model = self._restore_skills(filepath, file_type)
+                case FileType.COMMON_EVENTS:
+                    model = self._restore_common_events(filepath, file_type)
+                case FileType.MAPINFOS:
+                    model = self._restore_map_infos(filepath, file_type)
+                # TXT
+                case FileType.QUEST:
+                    model = self._restore_quest(filepath, file_type)
+                case _:
+                    self.logger.bind(filepath=relative_filepath).error("Unknown file type when restore")
                     continue
 
-                self.logger.bind(filepath=relative_filepath).debug("Restoring file")
-                match file_type:
-                    # JSON
-                    case FileType.MAP:
-                        model = self._restore_map(filepath, file_type)
-                    case FileType.SYSTEM:
-                        model = self._restore_system(filepath, file_type)
-                    case FileType.ITEMS:
-                        model = self._restore_items(filepath, file_type)
-                    case FileType.SKILLS:
-                        model = self._restore_skills(filepath, file_type)
-                    case FileType.COMMON_EVENTS:
-                        model = self._restore_common_events(filepath, file_type)
-                    case FileType.MAPINFOS:
-                        model = self._restore_map_infos(filepath, file_type)
-                    # TXT
-                    case FileType.QUEST:
-                        model = self._restore_quest(filepath, file_type)
-                    case _:
-                        self.logger.bind(filepath=relative_filepath).error("Unknown file type when restore")
-                        continue
+            if model is None:
+                self.logger.bind(filepath=relative_filepath).warning("Restoring file failed")
+                continue
 
-                if model is None:
-                    self.logger.bind(filepath=relative_filepath).warning("Restoring file failed")
-                    continue
-
-                os.makedirs((DIR_RESULT / relative_filepath).parent, exist_ok=True)
-                if isinstance(model, str):
-                    with open(DIR_RESULT / result_filepath, "w", encoding="utf-8") as fp:
-                        fp.write(model)
-                    self.logger.bind(filepath=relative_filepath).debug("Restoring file successfully.")
-                    continue
-
-                elif isinstance(model, list):
-                    datas = [m.model_dump() if m is not None else None for m in model]
-
-                else:
-                    datas = model.model_dump()
-
+            (DIR_RESULT / relative_filepath).parent.mkdir(exist_ok=True, parent=True)
+            if isinstance(model, str):
                 with open(DIR_RESULT / result_filepath, "w", encoding="utf-8") as fp:
-                    json.dump(datas, fp, ensure_ascii=False)
+                    fp.write(model)
                 self.logger.bind(filepath=relative_filepath).debug("Restoring file successfully.")
+                continue
+
+            elif isinstance(model, list):
+                datas = [m.model_dump() if m is not None else None for m in model]
+
+            else:
+                datas = model.model_dump()
+
+            with open(DIR_RESULT / result_filepath, "w", encoding="utf-8") as fp:
+                json.dump(datas, fp, ensure_ascii=False)
+            self.logger.bind(filepath=relative_filepath).debug("Restoring file successfully.")
 
         self.restore_special()
 
@@ -900,7 +896,7 @@ class Tweaker:
         root.insert(0, head,)
 
         tree: ElementTree = etree.ElementTree(root)
-        os.makedirs(DIR_RESULT / "www", exist_ok=True)
+        (DIR_RESULT / "www").mkdir(parents=True, exist_ok=True)
         tree.write(DIR_RESULT / "www" / "index.html", encoding="utf-8", method="html", pretty_print=True)
         self.logger.success("Tweak game title successfully.")
 
@@ -938,7 +934,7 @@ class Tweaker:
             for model in plugins
         ]
         content = content.replace(plugins_string, json.dumps(plugins, ensure_ascii=False))
-        os.makedirs(DIR_RESULT / "www" / "js", exist_ok=True)
+        (DIR_RESULT / "www" / "js").mkdir(parents=True, exist_ok=True)
         with open(DIR_RESULT / "www" / "js" / "plugins.js", "w", encoding="utf-8") as fp:
             fp.write(content)
         self.logger.success("Tweak game plugins successfully.")
@@ -1074,7 +1070,7 @@ class Tweaker:
         for k, v in change_mapping.items():
             content = content.replace(k, v, 1)
 
-        os.makedirs(DIR_RESULT / "www" / "js" / "plugins", exist_ok=True)
+        (DIR_RESULT / "www" / "js" / "plugins").mkdir(parents=True, exist_ok=True)
         with open(DIR_RESULT / "www" / "js" / "plugins" / "YEP_MessageCore.js", "w", encoding="utf-8") as fp:
             fp.write(content)
         self.logger.success("Tweak message core successfully.")
