@@ -43,6 +43,7 @@ class GameMapEventModel(_BaseModelAllowExtra):
 
 class GameMapModel(_BaseModelAllowExtra):
     events: list[GameMapEventModel | None]
+    displayName: str
 
 
 """ SYSTEM """

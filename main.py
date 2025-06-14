@@ -10,11 +10,16 @@ from src.toast import Toaster
 def main():
     start = time.time()
     project = Project()
-    project.clean(settings.filepath.root / settings.filepath.tmp)
-    project.converter.convert()
-
+    project.clean(
+        settings.filepath.root / settings.filepath.tmp,
+        settings.filepath.root / settings.filepath.convert,
+        settings.filepath.root / settings.filepath.download,
+        settings.filepath.root / settings.filepath.result,
+    )
     paratranz = Paratranz()
     paratranz.download()
+
+    project.converter.convert()
     project.restorer.restore()
     project.tweaker.tweak()
     end = time.time()

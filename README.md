@@ -8,9 +8,8 @@
 ┃  ┣━ 📁log
 ┃  ┗━ 📁tmp
 ┣━ 📁resource
-┃  ┣━ 📁00-original
+┃  ┣━ 📁01-original
 ┃  ┃  ┗━ 📁Daily Lives of My Countryside ...
-┃  ┣━ 📁01-translation
 ┃  ┣━ 📁02-paratranz
 ┃  ┃  ┣━ 📁convert
 ┃  ┃  ┗━ 📁download
@@ -76,9 +75,7 @@
    # 项目所需大文件/脚本自动生成的游戏文件存放处
    PATH_RESOURCE=resource
    # 游戏原文件存放处
-   PATH_ORIGINAL=resource/00-original
-   # 已有汉化文件，手动放置
-   PATH_TRANSLATION=resource/01-translation
+   PATH_ORIGINAL=resource/01-original
    # 提取游戏原文件并结合已有汉化后生成的文件，需上传至 Paratranz 平台
    PATH_CONVERT=resource/02-paratranz/convert
    # 从 Paratranz 平台下载的汉化文件

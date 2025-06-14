@@ -17,7 +17,7 @@ from src.log import logger
 from src.model import *
 
 GAME_ROOT = settings.filepath.root / settings.filepath.original / f"{settings.game.name} v{settings.game.version}"
-DIR_TRANSLATION = settings.filepath.root / settings.filepath.translation
+# DIR_TRANSLATION = settings.filepath.root / settings.filepath.translation
 DIR_CONVERT = settings.filepath.root / settings.filepath.convert
 DIR_DOWNLOAD = settings.filepath.root / settings.filepath.download
 DIR_RESULT = settings.filepath.root / settings.filepath.result
@@ -106,14 +106,16 @@ class Project:
         self.logger.bind(filepath=filepath).error("Unknown filetype when categorize")
         return None
 
-    @staticmethod
-    def read(fp: io.TextIOBase, type_: FileType) -> list[str] | str | list | dict:
+    def read(self, fp: io.TextIOWrapper, type_: FileType) -> list[str] | str | list | dict:
         match type_:
             case FileType.QUEST | FileType.RECIPES:  # txt
+                self.logger.debug(f"Reading {type_}")
                 return fp.read()
             case FileType.MAP | FileType.SYSTEM | FileType.MAPINFOS | FileType.ITEMS | FileType.SKILLS | FileType.COMMON_EVENTS:
+                self.logger.debug(f"Reading {type_}")
                 return json.load(fp)
             case _:
+                self.logger.error(f"Reading unknown type failed: {type_}")
                 raise TypeError
 
     @property
@@ -183,25 +185,28 @@ class Converter:
                 datas = [_.model_dump() for _ in models]
                 (DIR_CONVERT / relative_filepath).parent.mkdir(parents=True, exist_ok=True)
                 converted_filepath = relative_filepath.parent / f"{relative_filepath.name}.json"
-                with open(DIR_CONVERT / converted_filepath, "w", encoding="utf-8") as fp:
+                with (DIR_CONVERT / converted_filepath).open("w", encoding="utf-8") as fp:
                     json.dump(datas, fp, ensure_ascii=False, indent=2)
                 self.logger.bind(filepath=relative_filepath).debug("Converting file successfully.")
 
     def _convert_general(self, filepath: Path, type_: FileType, process_function: Callable[..., list[ParatranzModel]], **kwargs) -> list[ParatranzModel]:
         relative_filepath = filepath.relative_to(GAME_ROOT)
-        with open(filepath, "r", encoding="utf-8") as fp:
+        with filepath.open("r", encoding="utf-8") as fp:
             original = Project().read(fp, type_)
 
-        translation = None
-        filepath_translation = DIR_TRANSLATION / relative_filepath
+        translation, translation_mapping = None, None
+        filepath_translation = DIR_DOWNLOAD / relative_filepath.parent / f"{relative_filepath.name}.json"
         if translation_flag := filepath_translation.exists():
-            with open(filepath_translation, "r", encoding="utf-8") as fp:
-                translation = Project().read(fp, type_)
+            self.logger.bind(filepath=relative_filepath).debug("Translation exists.")
+            with filepath_translation.open("r", encoding="utf-8") as fp:
+                translation: list[ParatranzModel] | None = [ParatranzModel.model_validate(_) for _ in json.load(fp)]
+                translation_mapping: dict[str, ParatranzModel] | None = {model.key: model for model in translation}
 
         return process_function(
             filepath=filepath,
             original=original,
             translation=translation,
+            translation_mapping=translation_mapping,
             translation_flag=translation_flag,
             **kwargs
         )
@@ -216,25 +221,19 @@ class Converter:
         """
         def _process(**kwargs):
             original: str = kwargs["original"]
-            translation: str = kwargs["translation"]
             translation_flag = kwargs["translation_flag"]
+            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
 
             pattern = re.compile(r"(<quest (\d+?):[\s\S]+?\|\d+?\|\d+?>[\s\S]+?</quest>)")
             quests = re.findall(pattern, original)  # [(quest, idx)]
-            if translation_flag:
-                quests_translation = re.findall(pattern, translation)
-                translations = {
-                    idx_: quest_translation
-                    for quest_translation, idx_ in quests_translation
-                }
 
             return [
                 ParatranzModel(
-                    key=idx,
+                    key=id_,
                     original=quest,
-                    translation=translations[idx] if translation_flag and translations[idx] != quest else ""
+                    translation=(translation_mapping.get(id_, "") if translation_flag else "").translation if translation_mapping.get(id_) else ""
                 )
-                for quest, idx in quests
+                for quest, id_ in quests
             ]
 
         return self._convert_general(
@@ -253,9 +252,24 @@ class Converter:
         def _process(**kwargs):
             original: GameMapModel = GameMapModel.model_validate(kwargs["original"])
             translation_flag = kwargs["translation_flag"]
-            translation: GameMapModel = GameMapModel.model_validate(kwargs["translation"]) if translation_flag else None
+            translation: list[ParatranzModel] | None = kwargs["translation"]
+            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
 
-            models = []
+            def _build_context(idx_unit_: int, code_: Code, flag_: bool, page_: GameMapPageModel):
+                context = ""
+                if flag_:
+                    return flag_, context
+
+                flag_ = True
+                idx_ = idx_unit_
+                while code_ == page_.list[idx_:][0].code:
+                    context += f"\n{page_.list[idx_:][0].parameters[0]}"
+                    idx_ += 1
+                return flag_, context
+
+            display_name_translation = translation_mapping.get("displayName", "") if translation_flag else ""
+            display_name_translation = display_name_translation.translation if display_name_translation else ""
+            models = [ParatranzModel(key="displayName", original=original.displayName, translation=display_name_translation)]
             for idx_event, event in enumerate(original.events):
                 if event is None:
                     continue
@@ -265,36 +279,28 @@ class Converter:
                 for idx_page, page in enumerate(event.pages):
                     flag_conversation, flag_choice = False, False
                     for idx_unit, unit in enumerate(page.list):
-                        if Code.DIALOG == unit.code:
+                        unit_code = unit.code
+                        key = f"{event_id} | {event_name} | {idx_page} | {idx_unit} | {unit_code}"
+                        if Code.DIALOG == unit_code:
                             original_value = unit.parameters[0]  # str
-                            translation_value = translation.events[idx_event].pages[idx_page].list[idx_unit].parameters[0] if translation_flag else ""
-                            if not flag_conversation:
-                                flag_conversation = True
-                                idx_ = idx_unit
-                                context_conversation = ""
-                                while Code.DIALOG == page.list[idx_:][0].code:
-                                    context_conversation += f"\n{page.list[idx_:][0].parameters[0]}"
-                                    idx_ += 1
-                        elif Code.CHOICE == unit.code:
+                            translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
+                            translation_value = translation_value[0] if translation_value else ""
+                            flag_conversation, context_conversation = _build_context(idx_unit, Code.DIALOG, flag_conversation, page)
+                        elif Code.CHOICE == unit_code:
                             original_value = "\n".join(unit.parameters[0])  # list[str]
-                            translation_value = "\n".join(translation.events[idx_event].pages[idx_page].list[idx_unit].parameters[0]) if translation_flag else ""
-                            if not flag_choice:
-                                flag_choice = True
-                                idx_ = idx_unit
-                                context_choice = ""
-                                while Code.CHOICE == page.list[idx_:][0].code:
-                                    context_choice += f"\n{' | '.join(page.list[idx_:][0].parameters[0])}"
-                                    idx_ += 1
+                            translation_value = ["\n".join(model.translation) for model in translation if model.original == original_value] if translation_flag else ""
+                            translation_value = translation_value[0] if translation_value else ""
+                            flag_choice, context_choice = _build_context(idx_unit, Code.CHOICE, flag_choice, page)
                         else:
                             flag_conversation, flag_choice = False, False
                             continue
 
                         models.append(
                             ParatranzModel(
-                                key=f"{event_id} | {event_name} | {idx_page} | {idx_unit} | {unit.code}",
+                                key=key,
                                 original=original_value,
-                                translation=translation_value if translation_value != original_value else "",
-                                context=context_conversation.strip() if Code.DIALOG == unit.code else context_choice.strip(),
+                                translation=translation_value,
+                                context=context_conversation.strip() if Code.DIALOG == unit_code else context_choice.strip(),
                             )
                         )
 
@@ -316,55 +322,40 @@ class Converter:
         def _process(**kwargs):
             original: GameSystemModel = GameSystemModel.model_validate(kwargs["original"])
             translation_flag = kwargs["translation_flag"]
-            translation: GameSystemModel = GameSystemModel.model_validate(kwargs["translation"]) if translation_flag else None
+            translation: list[ParatranzModel] | None = kwargs["translation"]
+            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
 
             models = []
             game_title_original = original.gameTitle
-            game_title_translation = translation.gameTitle if translation_flag else ""
-            game_title_translation = game_title_translation if game_title_translation != game_title_original else ""
+            game_title_translation = translation_mapping["gameTitle"].translation if translation_flag else ""
             models.append(ParatranzModel(key="gameTitle", original=game_title_original, translation=game_title_translation))
 
             locale_original = original.locale
-            locale_translation = translation.locale if translation_flag else ""
-            locale_translation = locale_translation if locale_translation != locale_original else ""
+            locale_translation = translation_mapping["locale"].translation if translation_flag else ""
             models.append(ParatranzModel(key="locale", original=locale_original, translation=locale_translation))
 
-            for idx, skill_type in enumerate(original.skillTypes):
-                if not skill_type:
-                    continue
-                skill_type_original = skill_type
-                skill_type_translation = translation.skillTypes[idx] if translation_flag else ""
-                skill_type_translation = skill_type_translation if skill_type_translation != skill_type_original else ""
-                models.append(ParatranzModel(key=f"skillTypes | {idx}", original=skill_type_original, translation=skill_type_translation))
+            def _convert_lists(list_: list, key_prefix: str, models_: list):
+                for idx_, item in enumerate(list_):
+                    if not item:
+                        continue
 
-            for idx, basic in enumerate(original.terms.basic):
-                if not basic:
-                    continue
-                basic_original = basic
-                basic_translation = translation.terms.basic[idx] if translation_flag else ""
-                basic_translation = basic_translation if basic_translation != basic_original else ""
-                models.append(ParatranzModel(key=f"terms | basic | {idx}", original=basic_original, translation=basic_translation))
+                    key_ = f"{key_prefix} | {idx_}"
+                    original_ = item
+                    translation_ = [model.translation for model in translation if model.original == original_] if translation_flag else ""
+                    translation_ = translation_[0] if translation_ else ""
+                    models_.append(ParatranzModel(key=key_, original=original_, translation=translation_))
+                return models_
 
-            for idx, command in enumerate(original.terms.commands):
-                if not command:
-                    continue
-                command_original = command
-                command_translation = translation.terms.commands[idx] if translation_flag else ""
-                command_translation = command_translation if command_translation != command_original else ""
-                models.append(ParatranzModel(key=f"terms | commands | {idx}", original=command_original, translation=command_translation))
-
-            for idx, param in enumerate(original.terms.params):
-                if not param:
-                    continue
-                param_original = param
-                param_translation = translation.terms.params[idx] if translation_flag else ""
-                param_translation = param_translation if param_translation != param_original else ""
-                models.append(ParatranzModel(key=f"terms | params | {idx}", original=param_original, translation=param_translation))
+            models = _convert_lists(original.skillTypes, "skillTypes", models)
+            models = _convert_lists(original.terms.basic, "terms | basic", models)
+            models = _convert_lists(original.terms.commands, "terms | commands", models)
+            models = _convert_lists(original.terms.params, "terms | params", models)
 
             for key, value in original.terms.messages.items():
+                key = f"terms | messages | {key}"
                 message_original = value
-                message_translation = translation.terms.messages[key] if translation_flag else ""
-                message_translation = message_translation if message_translation != message_original else ""
+                message_translation = translation_mapping.get(key, "") if translation_flag else ""
+                message_translation = message_translation.translation if message_translation else ""
                 models.append(ParatranzModel(key=f"terms | messages | {key}", original=message_original, translation=message_translation))
 
             return models
@@ -385,7 +376,7 @@ class Converter:
         def _process(**kwargs):
             original: list[GameItemModel] = [GameItemModel.model_validate(_) for _ in kwargs["original"] if _]
             translation_flag = kwargs["translation_flag"]
-            translation: list[GameItemModel] = [GameItemModel.model_validate(_) for _ in kwargs["translation"] if _] if translation_flag else None
+            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
 
             models = []
             for idx, item in enumerate(original):
@@ -393,13 +384,15 @@ class Converter:
                     continue
 
                 if item.name:
-                    translation_value = translation[idx].name if translation_flag else ""
-                    translation_value = translation_value if translation_value != item.name else ""
-                    models.append(ParatranzModel(key=f"{item.id} | name", original=item.name, translation=translation_value, context=f"{item.id} | {item.name}\n{item.description}"))
+                    key = f"{item.id} | name"
+                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
+                    translation_value = translation_value.translation if translation_value else ""
+                    models.append(ParatranzModel(key=key, original=item.name, translation=translation_value, context=f"{item.id} | {item.name}\n{item.description}"))
                 if item.description:
-                    translation_value = translation[idx].description if translation_flag else ""
-                    translation_value = translation_value if translation_value != item.description else ""
-                    models.append(ParatranzModel(key=f"{item.id} | description", original=item.description, translation=translation_value, context=f"{item.id} | {item.name}\n{item.description}"))
+                    key = f"{item.id} | description"
+                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
+                    translation_value = translation_value.translation if translation_value else ""
+                    models.append(ParatranzModel(key=key, original=item.description, translation=translation_value, context=f"{item.id} | {item.name}\n{item.description}"))
             return models
 
         return self._convert_general(
@@ -418,7 +411,7 @@ class Converter:
         def _process(**kwargs):
             original: list[GameSkillModel] = [GameSkillModel.model_validate(_) for _ in kwargs["original"] if _]
             translation_flag = kwargs["translation_flag"]
-            translation: list[GameSkillModel] = [GameSkillModel.model_validate(_) for _ in kwargs["translation"] if _] if translation_flag else None
+            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
 
             models = []
             for idx, skill in enumerate(original):
@@ -426,12 +419,14 @@ class Converter:
                     continue
 
                 if skill.name:
-                    translation_value = translation[idx].name if translation_flag else ""
-                    translation_value = translation_value if translation_value != skill.name else ""
+                    key = f"{skill.id} | name"
+                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
+                    translation_value = translation_value.translation if translation_value else ""
                     models.append(ParatranzModel(key=f"{skill.id} | name", original=skill.name, translation=translation_value, context=f"{skill.id} | {skill.name}\n{skill.description}"))
                 if skill.description:
-                    translation_value = translation[idx].description if translation_flag else ""
-                    translation_value = translation_value if translation_value != skill.description else ""
+                    key = f"{skill.id} | description"
+                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
+                    translation_value = translation_value.translation if translation_value else ""
                     models.append(ParatranzModel(key=f"{skill.id} | description", original=skill.description, translation=translation_value, context=f"{skill.id} | {skill.name}\n{skill.description}"))
 
             return models
@@ -452,7 +447,19 @@ class Converter:
         def _process(**kwargs):
             original: list[GameCommonEventModel] = [GameCommonEventModel.model_validate(_) for _ in kwargs["original"] if _]
             translation_flag = kwargs["translation_flag"]
-            translation: list[GameCommonEventModel] = [GameCommonEventModel.model_validate(_) for _ in kwargs["translation"] if _] if translation_flag else None
+            translation: list[ParatranzModel] | None = kwargs["translation"]
+
+            def _build_context(idx_unit_: int, code_: Code, flag_: bool, event_: GameCommonEventModel):
+                context = ""
+                if flag_:
+                    return flag_, context
+
+                flag_ = True
+                idx_ = idx_unit_
+                while code_ == event_.list[idx_:][0].code:
+                    context += f"\n{event_.list[idx_:][0].parameters[0]}"
+                    idx_ += 1
+                return flag_, context
 
             models = []
             for idx, event in enumerate(original):
@@ -462,24 +469,14 @@ class Converter:
                 for idx_unit, unit in enumerate(event.list):
                     if Code.DIALOG == unit.code:
                         original_value = unit.parameters[0]  # str
-                        translation_value = translation[idx].list[idx_unit].parameters[0] if translation_flag else ""
-                        if not flag_conversation:
-                            flag_conversation = True
-                            idx_ = idx_unit
-                            context_conversation = ""
-                            while Code.DIALOG == event.list[idx_:][0].code:
-                                context_conversation += f"\n{event.list[idx_:][0].parameters[0]}"
-                                idx_ += 1
+                        translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
+                        translation_value = translation_value[0] if translation_value else ""
+                        flag_conversation, context_conversation = _build_context(idx_unit, Code.DIALOG, flag_conversation, event)
                     elif Code.CHOICE == unit.code:
                         original_value = "\n".join(unit.parameters[0])  # list[str]
-                        translation_value = "\n".join(translation[idx].list[idx_unit].parameters[0]) if translation_flag else ""
-                        if not flag_choice:
-                            flag_choice = True
-                            idx_ = idx_unit
-                            context_choice = ""
-                            while Code.CHOICE == event.list[idx_:][0].code:
-                                context_choice += f"\n{' | '.join(event.list[idx_:][0].parameters[0])}"
-                                idx_ += 1
+                        translation_value = ["\n".join(model.translation) for model in translation if model.original == original_value] if translation_flag else ""
+                        translation_value = translation_value[0] if translation_value else ""
+                        flag_choice, context_choice = _build_context(idx_unit, Code.CHOICE, flag_choice, event)
                     else:
                         flag_conversation, flag_choice = False, False
                         continue
@@ -488,7 +485,7 @@ class Converter:
                         ParatranzModel(
                             key=f"{event_id} | {event_name} | {idx_unit} | {unit.code}",
                             original=original_value,
-                            translation=translation_value if translation_value != original_value else "",
+                            translation=translation_value,
                             context=context_conversation.strip() if Code.DIALOG == unit.code else context_choice.strip(),
                         )
                     )
@@ -510,22 +507,15 @@ class Converter:
         def _process(**kwargs):
             original: list[GameMapInfoModel | None] = [GameMapInfoModel.model_validate(_) if _ is not None else None for _ in kwargs["original"]]
             translation_flag = kwargs["translation_flag"]
-            translation: list[GameMapInfoModel | None] = [GameMapInfoModel.model_validate(_) if _ is not None else None for _ in kwargs["translation"]]
+            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
 
             models = []
             for idx, info in enumerate(original):
                 if info is None:
                     continue
 
-                translation_value = ""
-                if translation_flag:
-                    translation_value = [
-                        info_.name
-                        for info_ in translation
-                        if info_ is not None and info_.id == info.id
-                    ]
-                    translation_value = translation_value[0] if translation_value else ""
-                    translation_value = translation_value if translation_value != info.name else ""
+                translation_value = translation_mapping.get(info.id.__str__(), "") if translation_flag else ""
+                translation_value = translation_value.translation if translation_flag else ""
                 models.append(ParatranzModel(key=info.id.__str__(), original=info.name, translation=translation_value))
 
             return models
@@ -551,6 +541,9 @@ class Restorer:
         self.logger.info("======= RESTORE START =======")
         DIR_DOWNLOAD.mkdir(exist_ok=True, parents=True)
         for filepath in DIR_DOWNLOAD.glob("**/*"):
+            if filepath.is_dir():
+                continue
+
             relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
             result_filepath = DIR_RESULT / relative_filepath.with_suffix("")
             file_type = Project().categorize(result_filepath)
@@ -585,7 +578,7 @@ class Restorer:
 
             (DIR_RESULT / relative_filepath).parent.mkdir(exist_ok=True, parents=True)
             if isinstance(model, str):
-                with open(DIR_RESULT / result_filepath, "w", encoding="utf-8") as fp:
+                with (DIR_RESULT / result_filepath).open("w", encoding="utf-8") as fp:
                     fp.write(model)
                 self.logger.bind(filepath=relative_filepath).debug("Restoring file successfully.")
                 continue
@@ -596,7 +589,7 @@ class Restorer:
             else:
                 datas = model.model_dump()
 
-            with open(DIR_RESULT / result_filepath, "w", encoding="utf-8") as fp:
+            with (DIR_RESULT / result_filepath).open("w", encoding="utf-8") as fp:
                 json.dump(datas, fp, ensure_ascii=False)
             self.logger.bind(filepath=relative_filepath).debug("Restoring file successfully.")
 
@@ -608,11 +601,11 @@ class Restorer:
 
     def _restore_general(self, filepath: Path, type_: FileType, process_function: Callable[..., list[BaseModel]|BaseModel|str], **kwargs) -> list[BaseModel] | BaseModel | str:
         relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
-        with open(filepath, "r", encoding="utf-8") as fp:
+        with filepath.open("r", encoding="utf-8") as fp:
             download = json.load(fp)
 
         filepath_original = GAME_ROOT / relative_filepath.with_suffix("")
-        with open(filepath_original, "r", encoding="utf-8") as fp:
+        with filepath_original.open("r", encoding="utf-8") as fp:
             original = Project().read(fp, type_)
 
         return process_function(
@@ -657,6 +650,8 @@ class Restorer:
                 if model.untranslated():
                     continue
 
+                if model.key == "displayName":
+                    original.displayName = model.translation
                 event_id, event_name, idx_page, idx_unit, unit_code = (_.strip() for _ in model.key.split("|"))
                 event_id, idx_page, idx_unit, unit_code = int(event_id), int(idx_page), int(idx_unit), int(unit_code)
                 event_name = event_name.strip()
@@ -879,10 +874,9 @@ class Tweaker:
         self.logger.info("======= TWEAK START =======")
         self.tweak_game_title()
         self.tweak_game_plugins()
-        # self.tweak_yep_message_core()
 
     def tweak_game_title(self):
-        with open(GAME_ROOT / "www" / "index.html", encoding="utf-8") as fp:
+        with (GAME_ROOT / "www" / "index.html").open("r", encoding="utf-8") as fp:
             root: Element = etree.HTML(fp.read())
 
         newtitle = etree.Element("title")
@@ -897,11 +891,11 @@ class Tweaker:
 
         tree: ElementTree = etree.ElementTree(root)
         (DIR_RESULT / "www").mkdir(parents=True, exist_ok=True)
-        tree.write(DIR_RESULT / "www" / "index.html", encoding="utf-8", method="html", pretty_print=True)
+        tree.write(DIR_RESULT / "www" / "index.html", encoding="utf-8", method="html")
         self.logger.success("Tweak game title successfully.")
 
     def tweak_game_plugins(self):
-        with open(GAME_ROOT / "www" / "js" / "plugins.js", encoding="utf-8") as fp:
+        with (GAME_ROOT / "www" / "js" / "plugins.js").open("r", encoding="utf-8") as fp:
             content = fp.read()
 
         pattern = re.compile(r"var \$plugins =\s*(\[[\s\S]+?]);")
@@ -935,7 +929,7 @@ class Tweaker:
         ]
         content = content.replace(plugins_string, json.dumps(plugins, ensure_ascii=False))
         (DIR_RESULT / "www" / "js").mkdir(parents=True, exist_ok=True)
-        with open(DIR_RESULT / "www" / "js" / "plugins.js", "w", encoding="utf-8") as fp:
+        with (DIR_RESULT / "www" / "js" / "plugins.js").open("w", encoding="utf-8") as fp:
             fp.write(content)
         self.logger.success("Tweak game plugins successfully.")
 
@@ -1057,30 +1051,6 @@ class Tweaker:
         plugin.parameters["Credit Data"] = revert_data
         plugin.parameters["Command Name"] = "致谢名单"
         return plugin
-
-    # def tweak_yep_message_core(self):
-    #     """Auto line break support Chinese characters"""
-    #     with open(GAME_ROOT / "www" / "js" / "plugins" / "YEP_MessageCore.js", encoding="utf-8") as fp:
-    #         content = fp.read()
-    #
-    #     change_mapping = {
-    #         "if (this.checkWordWrap(textState)) return this.processNewLine(textState);": "if (this.checkWordWrap(textState)){textState.index-=1;return this.processNewLine(textState);}",
-    #         """if (textState.text[textState.index] === ' ') {
-    #   var nextSpace = textState.text.indexOf(' ', textState.index + 1);
-    #   var nextBreak = textState.text.indexOf('\n', textState.index + 1);
-    #   if (nextSpace < 0) nextSpace = textState.text.length + 1;
-    #   if (nextBreak > 0) nextSpace = Math.min(nextSpace, nextBreak);
-    #   var word = textState.text.substring(textState.index, nextSpace);
-    #   var size = this.textWidthExCheck(word);
-    # }""": "var nextSpace = textState.index + 1;var nextBreak = textState.text.indexOf('\n', textState.index + 1);if (nextSpace < 0) nextSpace = textState.text.length + 1;if (nextBreak > 0) nextSpace = Math.min(nextSpace, nextBreak);var word = textState.text.substring(textState.index, nextSpace);var size = this.textWidthExCheck(word);"
-    #     }
-    #     for k, v in change_mapping.items():
-    #         content = content.replace(k, v, 1)
-    #
-    #     (DIR_RESULT / "www" / "js" / "plugins").mkdir(parents=True, exist_ok=True)
-    #     with open(DIR_RESULT / "www" / "js" / "plugins" / "YEP_MessageCore.js", "w", encoding="utf-8") as fp:
-    #         fp.write(content)
-    #     self.logger.success("Tweak message core successfully.")
 
     @property
     def logger(self) -> Logger:
