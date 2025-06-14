@@ -2,7 +2,7 @@ import time
 
 from src import Paratranz
 from src.config import settings
-from src.core import Project
+from src.core import Converter, Restorer, Tweaker, Project
 from src.log import logger
 from src.toast import Toaster
 
@@ -19,9 +19,9 @@ def main():
     paratranz = Paratranz()
     paratranz.download()
 
-    project.converter.convert()
-    project.restorer.restore()
-    project.tweaker.tweak()
+    Converter().convert()
+    Restorer().restore()
+    Tweaker().tweak()
     end = time.time()
     return end - start
 

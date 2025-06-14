@@ -69,10 +69,21 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+GAME_ROOT = settings.filepath.root / settings.filepath.original / f"{settings.game.name} v{settings.game.version}"
+DIR_CONVERT = settings.filepath.root / settings.filepath.convert
+DIR_DOWNLOAD = settings.filepath.root / settings.filepath.download
+DIR_RESULT = settings.filepath.root / settings.filepath.result
+DIR_SPECIAL = settings.filepath.root / settings.filepath.special
 
 __all__ = [
     "Settings",
     "settings",
+
+    "GAME_ROOT",
+    "DIR_CONVERT",
+    "DIR_DOWNLOAD",
+    "DIR_RESULT",
+    "DIR_SPECIAL",
 ]
 
 if __name__ == '__main__':
