@@ -134,6 +134,8 @@ class Restorer:
 
                 if model.key == "displayName":
                     original.displayName = model.translation
+                    continue
+
                 event_id, event_name, idx_page, idx_unit, unit_code = (_.strip() for _ in model.key.split("|"))
                 event_id, idx_page, idx_unit, unit_code = int(event_id), int(idx_page), int(idx_unit), int(unit_code)
                 event_name = event_name.strip()
