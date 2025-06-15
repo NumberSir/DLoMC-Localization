@@ -131,18 +131,6 @@ class Converter:
             translation: list[ParatranzModel] | None = kwargs["translation"]
             translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
 
-            def _build_context(idx_unit_: int, code_: Code, flag_: bool, page_: GameMapPageModel):
-                context = ""
-                if flag_:
-                    return flag_, context
-
-                flag_ = True
-                idx_ = idx_unit_
-                while code_ == page_.list[idx_:][0].code:
-                    context += f"\n{page_.list[idx_:][0].parameters[0]}"
-                    idx_ += 1
-                return flag_, context
-
             display_name_translation = translation_mapping.get("displayName", "") if translation_flag else ""
             display_name_translation = display_name_translation.translation if display_name_translation else ""
             models = [ParatranzModel(key="displayName", original=original.displayName, translation=display_name_translation)]
@@ -161,12 +149,24 @@ class Converter:
                             original_value = unit.parameters[0]  # str
                             translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
                             translation_value = translation_value[0] if translation_value else ""
-                            flag_conversation, context_conversation = _build_context(idx_unit, Code.DIALOG, flag_conversation, page)
+                            if not flag_conversation:
+                                flag_conversation = True
+                                idx_ = idx_unit
+                                context_conversation = ""
+                                while Code.DIALOG == page.list[idx_:][0].code:
+                                    context_conversation += f"\n{page.list[idx_:][0].parameters[0]}"
+                                    idx_ += 1
                         elif Code.CHOICE == unit_code:
                             original_value = "\n".join(unit.parameters[0])  # list[str]
                             translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
                             translation_value = translation_value[0] if translation_value else ""
-                            flag_choice, context_choice = _build_context(idx_unit, Code.CHOICE, flag_choice, page)
+                            if not flag_choice:
+                                flag_choice = True
+                                idx_ = idx_unit
+                                context_choice = ""
+                                while Code.CHOICE == page.list[idx_:][0].code:
+                                    context_choice += f"\n{' | '.join(page.list[idx_:][0].parameters[0])}"
+                                    idx_ += 1
                         else:
                             flag_conversation, flag_choice = False, False
                             continue
@@ -325,18 +325,6 @@ class Converter:
             translation_flag = kwargs["translation_flag"]
             translation: list[ParatranzModel] | None = kwargs["translation"]
 
-            def _build_context(idx_unit_: int, code_: Code, flag_: bool, event_: GameCommonEventModel):
-                context = ""
-                if flag_:
-                    return flag_, context
-
-                flag_ = True
-                idx_ = idx_unit_
-                while code_ == event_.list[idx_:][0].code:
-                    context += f"\n{event_.list[idx_:][0].parameters[0]}"
-                    idx_ += 1
-                return flag_, context
-
             models = []
             for idx, event in enumerate(original):
                 event_id = event.id
@@ -347,12 +335,24 @@ class Converter:
                         original_value = unit.parameters[0]  # str
                         translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
                         translation_value = translation_value[0] if translation_value else ""
-                        flag_conversation, context_conversation = _build_context(idx_unit, Code.DIALOG, flag_conversation, event)
+                        if not flag_conversation:
+                            flag_conversation = True
+                            idx_ = idx_unit
+                            context_conversation = ""
+                            while Code.DIALOG == event.list[idx_:][0].code:
+                                context_conversation += f"\n{event.list[idx_:][0].parameters[0]}"
+                                idx_ += 1
                     elif Code.CHOICE == unit.code:
                         original_value = "\n".join(unit.parameters[0])  # list[str]
                         translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
                         translation_value = translation_value[0] if translation_value else ""
-                        flag_choice, context_choice = _build_context(idx_unit, Code.CHOICE, flag_choice, event)
+                        if not flag_choice:
+                            flag_choice = True
+                            idx_ = idx_unit
+                            context_choice = ""
+                            while Code.CHOICE == event.list[idx_:][0].code:
+                                context_choice += f"\n{' | '.join(event.list[idx_:][0].parameters[0])}"
+                                idx_ += 1
                     else:
                         flag_conversation, flag_choice = False, False
                         continue
