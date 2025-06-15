@@ -8,6 +8,7 @@ from loguru._logger import Logger
 
 from src.config import settings
 from src.log import logger
+from src.schema.model import ParatranzProjectModel
 
 
 class Paratranz:
@@ -33,6 +34,12 @@ class Paratranz:
         data = {"file": bytearray(file, "utf-8"), "path": path.__str__()}
         response = self.client.post(url, headers=headers, data=data)
         self.logger.bind(filepath=response.json()).success("Created file successfully")
+
+    def get_project_info(self) -> ParatranzProjectModel:
+        url = f"{self.base_url}/projects/{self.project_id}"
+        response = self.client.get(url, headers=self.headers)
+        self.logger.success("Get project info successfully")
+        return ParatranzProjectModel.model_validate(response.json())
 
     def download(self):
         self.logger.info("Starting to download translated files...")
@@ -62,13 +69,10 @@ class Paratranz:
         with ZipFile(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip") as zfp:
             zfp.extractall(settings.filepath.root / settings.filepath.tmp)
 
-        def _ignore(src: str, names: list[str]):
-            return ["旧"]
         shutil.copytree(
             settings.filepath.root / settings.filepath.tmp / "utf8",
             settings.filepath.root / settings.filepath.download,
-            dirs_exist_ok=True,
-            ignore=_ignore
+            dirs_exist_ok=True
         )
 
     @property
@@ -95,3 +99,8 @@ class Paratranz:
 __all__ = [
     'Paratranz'
 ]
+
+
+if __name__ == '__main__':
+    result = Paratranz().get_project_info()
+    print(result)

@@ -24,6 +24,19 @@ class ParatranzModel(_BaseModelAllowExtra):
         return not self.translation or self.translation == self.original
 
 
+class ParatranzProjectStatModel(_BaseModelAllowExtra):
+    """"""
+    """translate"""
+    tp: float
+    """check"""
+    cp: float
+
+
+class ParatranzProjectModel(_BaseModelAllowExtra):
+    """json schema for project info in Paratranz"""
+    stats: ParatranzProjectStatModel
+
+
 """ MAP """
 class GameMapUnitModel(_BaseModelAllowExtra):
     code: int
@@ -104,6 +117,8 @@ class GamePluginModel(_BaseModelAllowExtra):
 
 __all__ = [
     'ParatranzModel',
+    'ParatranzProjectModel',
+    'ParatranzProjectStatModel',
 
     'GameMapUnitModel',
     'GameMapPageModel',

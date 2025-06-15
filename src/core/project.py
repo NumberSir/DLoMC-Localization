@@ -3,11 +3,13 @@ import json
 import shutil
 from contextlib import suppress
 from pathlib import Path
+from zipfile import ZipFile as zf, ZIP_DEFLATED
 
 from loguru._logger import Logger
 
-from src import settings
+from src.config import settings, DIR_RESULT
 from src.log import logger
+from src.paratranz import Paratranz
 from src.schema import *
 
 
@@ -72,17 +74,21 @@ class Project:
                 self.logger.error(f"Reading unknown type failed: {type_}")
                 raise TypeError
 
-    @property
-    def converter(self) -> "Converter":
-        return self._converter
+    def package(self):
+        """package result to zip file with password"""
+        (settings.filepath.root / settings.filepath.dist).mkdir(parents=True, exist_ok=True)
 
-    @property
-    def restorer(self) -> "Restorer":
-        return self._restorer
-
-    @property
-    def tweaker(self) -> "Tweaker":
-        return self._tweaker
+        model: ParatranzProjectModel = Paratranz().get_project_info()
+        filename = f"[汉化词典] v{settings.game.version}-chs-{settings.project.version}-{model.stats.tp*10000:.0f}-{model.stats.cp*10000:.0f}.zip"
+        with zf(settings.filepath.root / settings.filepath.dist / filename, "w", compresslevel=9, compression=ZIP_DEFLATED) as zfp:
+            for filepath in DIR_RESULT.glob("**/*"):
+                if filepath.is_dir():
+                    continue
+                zfp.write(
+                    filename=filepath,
+                    arcname=filepath.relative_to(DIR_RESULT),
+                    compresslevel=9
+                )
 
     @property
     def logger(self) -> Logger:

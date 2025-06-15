@@ -23,6 +23,7 @@ def main():
     Converter().convert()
     Restorer().restore()
     Tweaker().tweak()
+    project.package()
     end = time.time()
     return end - start
 

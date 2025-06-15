@@ -27,6 +27,7 @@ class FilepathSettings(BaseSettings):
     data: Path = Field(default=Path("data"))
     tmp: Path = Field(default=Path("data/tmp"))
     log: Path = Field(default=Path("data/log"))
+    dist: Path = Field(default=Path("dist"))
     resource: Path = Field(default=Path("resource"))
     original: Path = Field(default=Path("resource/01-original"))
     convert: Path = Field(default=Path("resource/02-paratranz/convert"))

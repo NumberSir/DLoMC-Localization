@@ -7,6 +7,7 @@
 ┣━ 📁data
 ┃  ┣━ 📁log
 ┃  ┗━ 📁tmp
+┣━ 📁dist
 ┣━ 📁resource
 ┃  ┣━ 📁01-original
 ┃  ┃  ┗━ 📁Daily Lives of My Countryside v<VERSION>
@@ -16,8 +17,8 @@
 ┃  ┣━ 📁03-result
 ┃  ┣━ 📁04-special-file
 ┃  ┃  ┗━ 📁www
-┃  ┃     ┗━ 📁img
-┃  ┃        ┗━ 📁pictures
+┃  ┃     ┣━ 📁img
+┃  ┃     ┗━ 📁js
 ┃  ┗━ 📁project-img
 ┃     ┗━ 🖼️icon.png
 ┣━ 📁src
@@ -72,6 +73,8 @@
    PATH_TMP=data/tmp
    # 存储自动生成的日志文件
    PATH_LOG=data/log
+   # 项目结果导出为压缩包的存放目录
+   PATH_DIST=dist
    # 项目所需大文件/脚本自动生成的游戏文件存放处
    PATH_RESOURCE=resource
    # 游戏原文件存放处
@@ -116,3 +119,4 @@
 8. `./resource/03-result` 中会生成替换完毕的汉化文件，需要将其手动覆盖替换游戏原文件。
    - 不要替换 `./resource/01-original` 中的游戏原文件！
    - 最好将游戏原文件复制一份到其他地方，单独覆盖游玩，保留 `./resource/01-original` 中的游戏原文件供文本提取用
+9. `./dist` 中会生成结果的压缩包。压缩包末尾的两个数字分别为万分之翻译进度和万分之审核进度
