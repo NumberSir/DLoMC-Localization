@@ -128,19 +128,19 @@ class Tweaker:
         name_mapping = {
             "Categories": "主要任务|#ffcc66,支线任务|#ffff99,制作任务|#ccccff,日常任务|#FFF5E3",
             "Quest Command": "任务日志",
-            "Active Cmd Txt": "活跃任务",
-            "Completed Cmd Txt": "已完成任务",
-            "Failed Cmd Txt": "失败任务",
-            "Desc Txt": "细节",
+            "Active Cmd Txt": "活跃的任务",
+            "Completed Cmd Txt": "完成的任务",
+            "Failed Cmd Txt": "失败的任务",
+            "Desc Txt": "任务细节",
             "Objectives Txt": "任务目标",
             "Difficulty Txt": "任务难度",
             "No Tracked Quest": "未选中任何任务",
-            "Pop New Quest": "新任务：",
-            "Pop Complete Quest": "已完成任务：",
-            "Pop Fail Quest": "任务失败：",
+            "Pop New Quest": "新任务领取：",
+            "Pop Complete Quest": "任务已完成：",
+            "Pop Fail Quest": "任务已失败：",
             "Pop New Objective": "新任务目标：",
             "Pop Complete Objective": "任务目标已完成：",
-            "Pop Fail Objective": "任务目标失败："
+            "Pop Fail Objective": "任务目标未完成："
         }
         plugin.parameters |= name_mapping
         return plugin
