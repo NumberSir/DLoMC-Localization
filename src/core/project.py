@@ -6,6 +6,7 @@ from pathlib import Path
 
 from loguru._logger import Logger
 
+from src import settings
 from src.log import logger
 from src.schema import *
 
@@ -13,6 +14,11 @@ from src.schema import *
 class Project:
     def __init__(self):
         self._logger = logger.bind(project_name="Project")
+
+    def check_structure(self):
+        """check if necessary files exist"""
+        if not (settings.filepath.root / settings.filepath.original).exists():
+            raise
 
     def clean(self, *filepaths: Path):
         for filepath in filepaths:

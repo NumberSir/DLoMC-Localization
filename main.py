@@ -10,6 +10,7 @@ from src.toast import Toaster
 def main():
     start = time.time()
     project = Project()
+    project.check_structure()
     project.clean(
         settings.filepath.root / settings.filepath.tmp,
         settings.filepath.root / settings.filepath.convert,
