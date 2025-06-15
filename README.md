@@ -9,7 +9,7 @@
 ┃  ┗━ 📁tmp
 ┣━ 📁resource
 ┃  ┣━ 📁01-original
-┃  ┃  ┗━ 📁Daily Lives of My Countryside ...
+┃  ┃  ┗━ 📁Daily Lives of My Countryside v<VERSION>
 ┃  ┣━ 📁02-paratranz
 ┃  ┃  ┣━ 📁convert
 ┃  ┃  ┗━ 📁download
@@ -43,8 +43,8 @@
     ```shell
     poetry install
     ```
-2. ~~（尚未实现）自动下载最新版游戏，解压至 `./resource/<游戏名>`~~
-3. 创建 `./resource` 文件夹，手动下载游戏，解压至 `./resource` 目录下
+2. ~~（尚未实现）自动下载最新版游戏，解压至 `./resource/01-original/<游戏名>`~~
+3. 创建 `./resource/01-original` 文件夹，手动下载游戏，解压至 `./resource/01-original` 目录下
 4. 创建 `.env` 文件，在其中填写 `.env.template` 中示例的环境变量
    ```dotenv
    # 不要直接修改 `.env.template`，而是重新在项目根目录下创建一个新的 `.env` 文件再做修改
@@ -110,4 +110,6 @@
    ```
 6. `./resource/02-paratranz/convert` 中会生成处理后的原文件，需要手动上传到 Paratranz 项目根目录下
 7. `./resource/02-paratranz/download` 中会生成自动下载好的原文-汉化字典，若没有说明你的 Paratranz 项目中没有汉化文件，或 Paratranz 项目结构不对
-8. `./resource/03-result` 中会生成替换完毕的汉化文件，需要将其手动覆盖替换游戏原文件
+8. `./resource/03-result` 中会生成替换完毕的汉化文件，需要将其手动覆盖替换游戏原文件。
+   - 不要替换 `./resource/01-original` 中的游戏原文件！
+   - 最好将游戏原文件复制一份到其他地方，单独覆盖游玩，保留 `./resource/01-original` 中的游戏原文件供文本提取用
