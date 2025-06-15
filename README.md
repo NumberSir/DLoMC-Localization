@@ -96,12 +96,15 @@
    
    ### GITHUB ###
    # !!!必填字段!!!
+   # GitHub 个人 personal access token
    GITHUB_ACCESS_TOKEN=
    
    ### PARATRANZ ###
    # !!!必填字段!!!
+   # Paratranz 项目 ID，纯数字
    PARATRANZ_PROJECT_ID=
    # !!!必填字段!!!
+   # Paratranz 个人 access token
    PARATRANZ_TOKEN=
    ```
 5. 运行根目录下的 `main.py`
