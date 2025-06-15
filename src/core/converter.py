@@ -164,21 +164,21 @@ class Converter:
                             flag_conversation, context_conversation = _build_context(idx_unit, Code.DIALOG, flag_conversation, page)
                         elif Code.CHOICE == unit_code:
                             original_value = "\n".join(unit.parameters[0])  # list[str]
-                            translation_value = ["\n".join(model.translation) for model in translation if model.original == original_value] if translation_flag else ""
+                            translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
                             translation_value = translation_value[0] if translation_value else ""
                             flag_choice, context_choice = _build_context(idx_unit, Code.CHOICE, flag_choice, page)
                         else:
                             flag_conversation, flag_choice = False, False
                             continue
 
-                        models.append(
-                            ParatranzModel(
-                                key=key,
-                                original=original_value,
-                                translation=translation_value,
-                                context=context_conversation.strip() if Code.DIALOG == unit_code else context_choice.strip(),
-                            )
+                        model = ParatranzModel(
+                            key=key,
+                            original=original_value,
+                            translation=translation_value,
+                            context=context_conversation.strip() if Code.DIALOG == unit_code else context_choice.strip(),
                         )
+                        model.context = f'{display_name_translation or original.displayName}\n{model.context}'
+                        models.append(model)
 
             return models
 
@@ -350,7 +350,7 @@ class Converter:
                         flag_conversation, context_conversation = _build_context(idx_unit, Code.DIALOG, flag_conversation, event)
                     elif Code.CHOICE == unit.code:
                         original_value = "\n".join(unit.parameters[0])  # list[str]
-                        translation_value = ["\n".join(model.translation) for model in translation if model.original == original_value] if translation_flag else ""
+                        translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
                         translation_value = translation_value[0] if translation_value else ""
                         flag_choice, context_choice = _build_context(idx_unit, Code.CHOICE, flag_choice, event)
                     else:
