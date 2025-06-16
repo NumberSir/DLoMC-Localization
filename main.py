@@ -1,8 +1,8 @@
 import time
 
-from src import Paratranz
 from src.config import settings
 from src.core import Converter, Restorer, Tweaker, Project
+from src.core.paratranz import Paratranz
 from src.log import logger
 from src.toast import Toaster
 

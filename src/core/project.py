@@ -8,8 +8,8 @@ from zipfile import ZipFile as zf, ZIP_DEFLATED
 from loguru._logger import Logger
 
 from src.config import settings, DIR_RESULT
+from src.core.paratranz import Paratranz
 from src.log import logger
-from src.paratranz import Paratranz
 from src.schema import *
 
 
