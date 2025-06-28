@@ -20,6 +20,10 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Get current time
+        id: time
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -49,10 +53,5 @@ jobs:
       - name: Capture the patch zip file
         uses: actions/upload-artifact@v4
         with:
-          name: Chinese Patch - ${{ github.sha }}
+          name: Chinese-Patch-${{ steps.date.outputs.date }}-${{ github.sha }}
           path: ${{ github.workspace }}/DLoMC-Localization/dist/*.zip
-
-      - name: Release the patch zip file
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ${{ github.workspace }}/DLoMC-Localization/dist/*.zip
