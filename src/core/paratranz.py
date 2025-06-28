@@ -16,7 +16,10 @@ class Paratranz:
         self._logger = logger.bind(project_name="Paratranz")
         self._client = client
         self._base_url = "https://paratranz.cn/api"
-        self._headers = {"Authorization": settings.paratranz.token}
+        self._headers = {
+            "Authorization": settings.paratranz.token,
+            "user-agent": settings.project.user_agent,
+        }
         self._project_id = settings.paratranz.project_id
         self.logger.info("")
         self.logger.info("======= PARATRANZ START =======")
