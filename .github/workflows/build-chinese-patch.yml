@@ -25,7 +25,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-          token: ${{ secrets.ACCESS_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Poetry  # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#caching-packages
         working-directory: ${{ github.workspace }}/DLoMC-Localization
