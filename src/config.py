@@ -18,6 +18,15 @@ class ProjectSettings(BaseSettings):
     log_level: str = Field(default="INFO")
     log_format: str = Field(default="<g>{time:HH:mm:ss}</g> | [<lvl>{level:^7}</lvl>] | {extra[project_name]}{message:<35}")
 
+    @property
+    def user_agent(self) -> str:
+        return (
+            f"{self.username}/"
+            f"{self.name}/"
+            f"{self.version} "
+            f"({self.email})"
+        )
+
 
 class FilepathSettings(BaseSettings):
     """About files / directories"""
@@ -60,8 +69,17 @@ class ParatranzSettings(BaseSettings):
     token: str = Field(default="")
 
 
+# TODO: Download the latest game automatically
+# class SubscribeStarSettings(BaseSettings):
+#     """About SubscribeStar"""
+#     model_config = SettingsConfigDict(env_prefix='SUBSCRIBE_STAR_')
+#     email: str = Field(default="")
+#     password: str = Field(default="")
+
+
 class Settings(BaseSettings):
     """Main settings"""
+    # subscribestar: SubscribeStarSettings = SubscribeStarSettings()
     paratranz: ParatranzSettings = ParatranzSettings()
     github: GitHubSettings = GitHubSettings()
     project: ProjectSettings = ProjectSettings()
@@ -88,4 +106,6 @@ __all__ = [
 ]
 
 if __name__ == '__main__':
-    print(Settings().model_dump())
+    from pprint import pprint
+    pprint(Settings().model_dump())
+    pprint(settings.project.user_agent)

@@ -30,8 +30,22 @@
 ┗━ 📄README.md
 ```
 
-# 用法
-1. 安装 [Python](https://www.python.org/downloads/) 3.8+, 安装必需的库：
+# 使用前
+1. 你的电脑上需要有 [Python][Python] 3.10 环境
+~~2. 你需要能够访问 [SubscribeStar][SubscribeStar] 和 [Mega][Mega] 网站的网络环境~~
+~~3. 你需要注册一个 [SubscribeStar][SubscribeStar] 账号，并关闭账号的多因素认证（如果有开启的话）：~~
+   ~~1. 打开`账号设置 (Account Settings)`~~
+   ~~2. 找到最下方的`安全 (Security)` 部分~~
+      ~~- 如果有框选，则取消框选 `Two-Factor E-mail Authentication` 选项~~
+      ~~- 如果有框选，则取消框选 `Quick E-mail Code Login` 选项~~
+   ~~3. 找到更下方的`验证器 (Authenticator Apps)` 部分~~
+      ~~- 如果之前设置过验证器，则点击 `Manage OTP Settings`~~
+      ~~- 点击 `Disable OTP`~~
+   ~~4. 找到更更下方的`通行秘钥验证 (Passkey Authentication)` 部分~~
+      ~~- 如果之前设置过通行秘钥，则点击对应秘钥右上角的垃圾桶图标删除该秘钥~~
+
+# 使用说明
+1. 安装本项目必需的库：
     - 安装 [pipx](https://pipx.pypa.io/stable/installation/)
     ```shell
     pip install pipx
@@ -120,3 +134,8 @@
    - 不要替换 `./resource/01-original` 中的游戏原文件！
    - 最好将游戏原文件复制一份到其他地方，单独覆盖游玩，保留 `./resource/01-original` 中的游戏原文件供文本提取用
 9. `./dist` 中会生成结果的压缩包。压缩包末尾的两个数字分别为万分之翻译进度和万分之审核进度
+
+
+[SubscribeStar]: https://subscribestar.adult/
+[Python]: https://www.python.org/downloads/
+[Mega]: https://mega.nz/
