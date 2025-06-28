@@ -1,0 +1,83 @@
+<recipe1>
+ result:{type:"item", id:111, amount:1}
+ <materials>
+  {type:"item", id:120, amount:1}
+  {type:"item", id:71, amount:30}
+  {type:"item", id:72, amount:15}
+  {type:"item", id:73, amount:30}
+ <materials>
+ category:Craft
+ success:100
+ successGain:0
+ xp:0
+ xpDeprac:0
+<recipe1>
+
+<recipe2>
+ result:{type:"item", id:112, amount:1}
+ <materials>
+  {type:"item", id:121, amount:1}
+  {type:"item", id:71, amount:30}
+  {type:"item", id:72, amount:60}
+  {type:"item", id:73, amount:60}
+ <materials>
+ category:Craft
+ success:100
+ successGain:0
+ xp:0
+ xpDeprac:0
+<recipe2>
+
+<recipe3>
+ result:{type:"item", id:113, amount:1}
+ <materials>
+  {type:"item", id:122, amount:1}
+  {type:"item", id:71, amount:80}
+  {type:"item", id:72, amount:20}
+  {type:"item", id:73, amount:80}
+ <materials>
+ category:Craft
+ success:100
+ successGain:0
+ xp:0
+ xpDeprac:0
+<recipe3>
+
+<recipe4>
+ result:{type:"item", id:160, amount:1}
+ <materials>
+  {type:"item", id:140, amount:2}
+  {type:"item", id:142, amount:1}
+ <materials>
+ category:Alchemy
+ success:85
+ successGain:3
+ xp:40
+ xpDeprac:2
+<recipe4>
+
+<recipe5>
+ result:{type:"item", id:161, amount:1}
+ <materials>
+  {type:"item", id:141, amount:2}
+  {type:"item", id:143, amount:1}
+ <materials>
+ category:Alchemy
+ success:85
+ successGain:3
+ xp:40
+ xpDeprac:2
+<recipe5>
+
+<recipe6>
+ result:{type:"item", id:162, amount:1}
+ <materials>
+  {type:"item", id:140, amount:1}
+  {type:"item", id:144, amount:1}
+ <materials>
+ category:Alchemy
+ success:85
+ successGain:3
+ xp:40
+ xpDeprac:1
+<recipe6>
