@@ -1,0 +1,13 @@
+[
+null,
+{"id":1,"battlerName":"","characterIndex":0,"characterName":"Hero","classId":5,"equips":[0,0,0,0,0],"faceIndex":5,"faceName":"Callum1","traits":[],"initialLevel":1,"maxLevel":1,"name":"Callum","nickname":"","note":"","profile":""},
+{"id":2,"battlerName":"","characterIndex":0,"characterName":"Mabel_Actor","classId":5,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"Mabel5","traits":[],"initialLevel":1,"maxLevel":1,"name":"Mabel","nickname":"","note":"","profile":""},
+{"id":3,"battlerName":"","characterIndex":4,"characterName":"Felix","classId":5,"equips":[0,0,0,0,0],"faceIndex":1,"faceName":"Felix10","traits":[],"initialLevel":1,"maxLevel":1,"name":"Felix","nickname":"","note":"","profile":""},
+{"id":4,"battlerName":"","characterIndex":0,"characterName":"Maleena_Actor2","classId":29,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"Maleena1","traits":[],"initialLevel":1,"maxLevel":99,"name":"Maleena","nickname":"","note":"","profile":""},
+{"id":5,"battlerName":"","characterIndex":0,"characterName":"Horse-Daisy","classId":9,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"Animal1","traits":[],"initialLevel":1,"maxLevel":99,"name":"Duke","nickname":"","note":"","profile":""},
+{"id":6,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":7,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":8,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":9,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":10,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""}
+]

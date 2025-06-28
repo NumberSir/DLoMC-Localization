@@ -1,0 +1,1265 @@
+Text that appears outside of the <quest></quest> tags will not display anywhere and can be used for notes if required.
+
+// <quest id:Name of Quest|difficulty|catId>
+// OBJECTIVES separated by commas (leave this blank to not use objectives for a quest)
+// RESOLUTIONS separated by commas use | for line breaks (leave this blank if not using resolutions for a quest)
+// quest description
+// quest description
+// quest description
+// </quest>
+
+<quest 1:Laundry Day|1|3>
+Your room,\C[20]Auntie Daisy\C[0]'s room,\C[2]Anna\C[0]'s Room,Wrong clothes,Put in the Bathroom basket
+\C[10]You picked the wrong clothes\C[0]
+Help \C[20]Auntie Daisy\C[0] 
+pick up the dirty clothes
+
+\C[16]Rewards\C[0]
+\C[20]Daisy\C[0]'s \C[3]Affection\C[0]
+</quest>
+
+
+<quest 2:Milk the Cows|1|3>
+\c[1]\v[46]/12\c[0] Bottle of Milk\I[281]
+
+Help \C[2]Anna\C[0] milk the cows 
+and hand the milk to her
+
+\C[2]Anna\C[0] outside the barn at
+\c[20]4 PM\c[0] - \c[20]6 PM\c[0]
+
+\C[16]Rewards\C[0]
+\C[2]Anna\C[0]'s \C[3]Affection\C[0]
+</quest>
+
+<quest 3:Steal Test Answers|2|1>
+Test Answers
+\C[10]Expired Answers\C[0]
+
+Help \C[22]Theo\C[0] by steal test answers
+
+The answer is on the table
+in \C[14]Ms. Emmi\C[0]'s office on \c[1]Thursday\c[0]
+
+\C[16]Rewards\C[0]
+\C[22]Theo\C[0]'s \C[3]Friendship\C[0]
+*Work in Progress*
+</quest>
+
+
+<quest 4:Fix the Broken Plank|1|1>
+Talk with \C[4]Ms. Susan\C[0],Broken Plank Fixed
+
+\C[30]Mrs. Adeera\C[0] asks you to fix 
+the broken plank
+
+It's in the 2nd floor 
+to the teachers offices corridor
+
+\C[16]Rewards\C[0]
+\C[30]Mrs. Adeera\C[0]'s \C[3]Affection\C[0]
+</quest>
+
+<quest 5:Economy|1|0>
+New Friend from the Other World,Any kind of Vegetables in Bag
+
+\C[20]Auntie Daisy\C[0] just teach you how to 
+Cultivate
+
+It's time to get something out of the 
+soil
+
+\C[16]Rewards\C[0]
+Congratulations! 
+You take the first step to becoming 
+a real Farmer!
+</quest>
+
+<quest 6:Honey|3|2>
+Bee House Scroll\I[191]
+
+You now capable to make your 1st 
+Bee House
+
+Gather enough materials and make one at 
+your Workbench
+
+\C[16]Rewards\C[0]
+Bzz Lover
+</quest>
+
+<quest 7:Bee Farm|5|2>
+\v[342]/3 Bee Houses
+
+Liquid Gold!!!
+
+\C[16]Rewards\C[0]
+Bzz Keeper
+</quest>
+
+<quest 8:Books from another world|1|0>
+Fantasy Book\I[231]
+
+\C[14]Ms. Emmi\C[0] is eager for a 
+new book that she hasn't read before
+
+\C[3]Pixie\c[0] will have a way
+
+\C[16]Rewards\C[0]
+\C[14]Ms. Emmi\C[0]'s love
+</quest>
+
+<quest 9:Grading and Chill|1|0>
+Bubble Tea\I[239]
+
+Spend time with \C[14]Ms. Emmi\C[0] 
+and some snack
+
+Convenience Store
+
+\C[16]Rewards\C[0]
+\C[14]Ms. Emmi\C[0]'s love
+</quest>
+
+<quest 10:Strange Stains|1|0>
+Coffee\I[238]
+
+Mysterious case
+
+Convenience Store
+
+\C[16]Rewards\C[0]
+Detective
+</quest>
+
+<quest 11:Get Laid|1|0>
+
+
+\C[27]Mabel\C[0] wants to play as a victim
+
+Classroom at \c[20]Night\c[0]
+
+\C[16]Rewards\C[0]
+Get Laid?
+</quest>
+
+<quest 12:Weird Sound at Night|1|0>
+
+
+\C[27]Mabel\C[0] heard a strange sound 
+at night and it scared her
+
+School Entrance at \c[20]Night\c[0]
+
+\C[16]Rewards\C[0]
+\C[27]Mabel\C[0]'s Affection
+</quest>
+
+<quest 13:Shooting Stage|3|0>
+Look for help,A Shooting Stage
+
+Build a Photagraphy Shooting Stage 
+for \C[27]Mabel\C[0]
+
+Look for help, maybe someone 
+knows how to build and craft
+
+\C[16]Rewards\C[0]
+\C[27]Mabel\C[0]'s Affection
+</quest>
+
+<quest 14:Slide In|1|0>
+
+
+\C[27]Mabel\C[0] don't want to do it
+because yours is massive
+
+Need \c[14]Tiny Miny Mini Dust\i[317]\c[0] from \C[3]Pixie\c[0] 
+to make it smaller
+
+\C[16]Rewards\C[0]
+Happy
+</quest>
+
+<quest 15:Buy Bleach|1|1>
+Bleach\i[197]
+
+\C[10]Mrs. Kate\C[0] tells you to buy Bleach,
+they need it to clean the pool
+
+Convenience Store
+
+\C[16]Rewards\C[0]
+Slippery
+</quest>
+
+<quest 16:Get Better on Swimming|3|0>
+
+
+Be like a fish in water
+
+Seek help from \C[10]Mrs. Kate\C[0] for
+better knowledge
+
+\C[16]Rewards\C[0]
+Swimming Skill\i[91]
+</quest>
+
+<quest 17:Massage|1|0>
+Hot Oil\i[214]
+
+Nina is so stiff and tight, 
+help her by giving her a good massage
+
+Tuuku Store
+
+\C[16]Rewards\C[0]
+Slippery like a fish
+</quest>
+
+<quest 18:Hidden Camera|1|0>
+Hidden Camera\i[198]
+
+Hidden paradise
+
+Tuuku Store
+
+\C[16]Rewards\C[0]
+Wireless Controller
+</quest>
+
+<quest 19:Comfort Nina|1|0>
+
+
+Go to the beach and find something 
+to comfort Nina
+
+Take the way at the Bottom left corner 
+of Daisy's farm
+
+\C[16]Rewards\C[0]
+\C[12]Nina\C[0]'s Affection
+</quest>
+
+<quest 20:Statue Sculpting Club|1|0>
+
+
+Check out Anna's Sculpting Club 
+after Class
+
+After studying in class
+
+\C[16]Rewards\C[0]
+\C[2]Anna\C[0]'s Affection
+</quest>
+
+<quest 21:A Martial Arts Training|1|0>
+
+
+Dive into intense training to 
+sharpen your skills and resilience
+
+Seeking a Master for 
+Martial Arts Training
+
+\C[16]Rewards\C[0]
+Access to the Dojo
+</quest>
+
+<quest 22:Last Call for Clay|3|0>
+Pay \C[3]Pixie\c[0] a visit,Seek help form \C[3]Elphaba\C[0]
+
+Need to find an alternative 
+for the big statue project
+
+\C[16]Rewards\C[0]
+Special Material
+</quest>
+
+\C[16]Rewards\C[0]
+Access to the Dojo
+</quest>
+
+<quest 23:Herb Hunt|3|3>
+\i[181]Herb \c[1]\v[351]\c[0]/9
+
+Help Elphaba by 
+gathering the herbs she needs 
+
+Team up with Maleena for her assistance
+
+\C[16]Rewards\C[0]
+A special gift, \c[14]500\i[172] 
+</quest>
+
+<quest 24:Lost Toys|1|1>
+
+
+Stolen Goods
+
+Visit the gymnasium locker at night
+
+\C[16]Rewards\C[0]
+Mystery Unfolds
+</quest>
+
+<quest 25:Early Morning Meeting|1|0>
+Meet Mrs. Kate at the Pool (6 AM)
+
+Nina informs you that Kate wants to meet 
+you at 6 AM at the school swimming pool
+
+</quest>
+
+<quest 26:Assist the Members|1|0>
+\v[364]/4 Assisted
+
+Offer towels and water 
+to the club members
+
+\C[16]Rewards\C[0]
+Increased trust with the club members
+</quest>
+
+<quest 27:Sabotage in the Shadow|2|0>
+
+
+Investigate and set traps 
+to stop the sabotage
+
+Go to the pool at night (9 PM - 11 PM)
+
+\C[16]Rewards\C[0]
+\c[14]250\c[0]\i[172]
+</quest>
+
+<quest 28:Exchange Deal|3|0>
+Seeking Assistance from \C[20]Ek\c[0],Set up Stall and Parasol
+
+Fulfill the promise to Kate: after 
+receiving a swimming trunk from her
+
+Visit Ek's workshop (1 PM)
+
+\C[16]Rewards\C[0]
+Increased relationship points with Kate 
+\c[14]500\c[0]\i[172]
+</quest>
+
+
+
+
+
+
+
+
+
+<quest 29:Elphaba Questline #6 - Subtle Testing|1|0>
+
+
+She didn’t invite me back again.
+Didn’t need to—after that ritual.
+The room shifted, her voice echoed...
+Something ancient is hiding in her home.
+And I need to understand it.
+
+Visit Elphaba at 1 PM
+</quest>
+
+<quest 30:Elphaba Questline #7 - Strange Books|2|0>
+
+
+She keeps a shelf full of stuff...
+Maybe I’ll get access soon.
+Finish her training without mistakes.
+Just a few clean brews, that’s all.
+One wrong pinch, and she’ll know.
+
+\C[16]Require\C[0]
+Got Praise: \c[1]\v[372]\c[0]/3
+</quest>
+
+<quest 31:Elphaba Questline #8 - Something Hidden|2|0>
+
+
+I’ve got access to her bookshelf...
+but I’m not exactly in a reading mood.
+Those books aren’t going anywhere, right?
+Maybe I should hang out with Maleena first.
+I’ll come back when I’m feeling braver.
+
+\C[16]Require\C[0]
+After Maleena - Greedy Adventure 9(\c[1]\v[166]\c[0]/35)
+After Alchemist – Motivation 1(\c[1]\v[133]\c[0]/1)
+</quest>
+
+<quest 32:Elphaba Questline #9 - Secret Note|1|0>
+
+
+Magic’s been stuck in my head.
+Feels like I missed something important.
+Something inside those books is calling.
+Time to read... and not explode.
+Maybe I’m not ready—but curious.
+
+\C[16]Require\C[0]
+Entries Read: \c[1]\v[373]\c[0]/9
+</quest>
+
+<quest 33:Elphaba Questline #10 - ???|1|0>
+
+
+She’s hiding something further below...
+The room’s colder, the air heavier.
+I’m not ready yet... not quite.
+But I will be—soon enough.
+
+\C[21]Locked – future update\C[0]
+</quest>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<quest 34:Alchemist Questline #1 - Legendary Start|1|0>
+
+
+Didn’t think I’d care about potions.
+But maybe there’s something here.
+Elphaba’s shelf has nine glowing entries.
+Reading sucks... but this might not.
+Time to see what clicks—hopefully.
+
+\C[16]Require\C[0]
+After Elphaba – Basic Shelf Access 7(\c[1]\v[40]\c[0]/31)
+Entries Read: \c[1]\v[373]\c[0]/9
+</quest>
+
+<quest 35:Alchemist Questline #2 - First Potion|1|0>
+
+
+Book read. Brain melted. Here goes.
+Time to try a real brew.
+Just need to make one potion.
+Please don’t explode. Please don’t explode.
+Heal potion attempt—no poison this time.
+
+\C[16]Require\C[0]
+\i[176]Health Potion
+</quest>
+
+<quest 36:Alchemist Questline #3 - Test Subject|1|0>
+
+
+Theo drinks weirder stuff all the time.
+He won’t notice this one’s magical.
+Might feel bad... but hey, it’s science.
+We’ll pay him later. Probably...
+
+Talk to Theo at 11 AM
+</quest>
+
+<quest 37:Alchemist Questline #4 - ???|1|0>
+
+
+Got one working. Want more now.
+There’s gotta be deeper stuff brewing.
+Stronger effects. Bigger risks. 
+Real danger.
+What’s a little madness for knowledge?
+
+\C[21]Locked – future update\C[0]
+</quest>
+
+
+
+
+
+
+
+
+
+
+
+
+<quest 38:Ek Questline #5 - Determination|1|0>
+
+
+He didn’t chase me down this time.
+But I know he’s watching.
+Time to show up... and not half-ass it.
+
+Talk to Ek at 6 AM (Ek's Dojo)
+</quest>
+
+<quest 39:Ek Questline #6 - Motivation|3|0>
+
+
+I finally hit that number...
+And his tone changed a little.
+Whatever comes next—it starts here.
+
+Banana Kicking Chore
+
+\C[16]Require:\C[0]
+Surpassed Score: \c[1]\v[376]\c[0]/3
+After Maleena - Nighttime Mishap 3(\c[1]\v[166]\c[0]/8)
+</quest>
+
+<quest 68:Ek Questline #7 - First Steps|1|0>
+
+
+I passed the test.
+He didn’t say much... just nodded.
+Now I’m to show up—early, sharp.
+This is where real training begins.
+
+Talk to Ek at 6 AM (Ek's Dojo)
+</quest>
+
+<quest 40:Ek Questline #8 - Training|1|0>
+
+
+Power feels different now.
+Like it’s waiting for something...
+Not sure I’m ready to test it yet.
+Maybe I should train with Maleena first.
+
+\C[16]Require\C[0]
+After Maleena - Power Awakening 5(\c[1]\v[166]\c[0]/14)
+</quest>
+
+<quest 41:Ek Questline #9 - Testing Strength|1|0>
+
+
+These muscles aren’t just for show.
+I need to test them against him.
+Show Ek how far I’ve come.
+
+Talk to Ek at 6 AM (Ek's Dojo)
+
+\C[16]Require:\C[0]
+Ek Friendship: \c[1]\v[145]\c[0]/70
+</quest>
+
+<quest 42:Ek Questline #10 - Tackle Together|2|0>
+
+
+I’ve got my power... and so does she.
+We’ve both come a long way.
+Maybe it’s time to train together more.
+Could learn a lot sparring with her.
+Who knows what else we’ll find out there.
+
+\C[16]Require\C[0]
+After Maleena - Greedy Adventure 9(\c[1]\v[166]\c[0]/35)
+</quest>
+
+<quest 43:Ek Questline #11 - Training Harder|1|0>
+
+
+I’ve learned, I’ve tried... 
+but still lacking.
+Something's missing, and I need to find it.
+Tomorrow’s training starts even earlier.
+
+Talk to Ek at 6 AM (Ek's Dojo)
+
+\C[16]Require\C[0]
+Ek Friendship: \c[1]\v[145]\c[0]/90
+</quest>
+
+<quest 44:Ek Questline #12 - Ritual and Rank|3|0>
+
+
+He told me to meet him later.
+Something in his voice felt different.
+I think I’m being trusted with more.
+
+Talk to Ek at 6 PM 
+(Valor Grounds – Dojo left side)
+
+\C[16]Reward\C[0] 
+\i[12]\c[2]Disciple of Iron\c[0]
+</quest>
+
+<quest 45:Ek Questline #13 - ???|1|0>
+
+
+He’s still holding something back.
+Whatever’s next... I need to be ready.
+And I will be.
+
+\C[21]Locked – future update\C[0]
+</quest>
+
+
+
+
+
+
+
+
+
+
+
+
+<quest 46:Banana Kicking|2|3>
+
+
+Wake up. Kick trees. Track bruises.
+He calls it training—I call it pain.
+Still... it’s making me stronger.
+
+\C[16]Require\C[0]
+Trees Kicked: \c[1]\v[355]\c[0]/5
+Total Score: \c[1]\v[356]\c[0]/80
+
+\C[16]Reward\C[0]
+Talk to Ek after training
+</quest>
+
+<quest 47:Flying Knee|1|1>
+
+
+She didn’t show me everything...
+But Ek noticed I picked it up.
+Now I’ve got a move that flies.
+
+\C[16]Require\C[0]
+Trained with Maleena: \c[1]\v[374]\c[0]/3
+</quest>
+
+<quest 48:Spartan Kick|1|1>
+
+
+The waterfall taught more than words.
+Force. Timing. Balance.
+This one kicks like thunder.
+
+\C[16]Require\C[0]
+Waterfall Session with Ek: \c[1]\v[375]\c[0]/3
+</quest>
+
+<quest 49:One Punch|1|1>
+
+
+Her drills changed the way I move.
+It's not just power. It’s precise.
+One punch. One hit. One result.
+
+\C[16]Require\C[0]
+Trained with Maleena: \c[1]\v[374]\c[0]/6
+</quest>
+
+<quest 50:Dead Knee|1|1>
+
+
+This isn’t just a technique anymore.
+It’s everything I’ve endured—weaponized.
+It hits harder than I ever could.
+
+\C[16]Require\C[0]
+Flying Knee Learned
+Trained with Punching Bag perfect: \c[1]\v[377]\c[0]/3
+</quest>
+
+<quest 51:Tame the Instinct|1|1>
+
+
+This power... it's not stable yet.
+It flares too wild, too fast.
+Maybe training with her will help.
+
+Train with Maleena at 6 PM, Valor Grounds
+
+\C[16]Require\C[0]
+Trained with Maleena: \c[1]\v[378]\c[0]/3
+
+\C[16]Reward\C[0] 
+Combat Skill - \i[6]Pounce
+Combat Skill - \i[35]Earthen Brace
+</quest>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+<quest 52:Maleena Questline #2 - Nighttime Walk|1|0>
+
+
+What’s that path on the left of Ek’s dojo?
+I’m free tonight anyway...
+Might as well take a walk.
+
+Go to Valor Grounds at night
+</quest>
+
+<quest 53:Maleena Questline #3 - Fancy|2|0>
+
+
+Maleena is so cool... damn.
+She’s fast, focused—looks like a real pro.
+I hope I can get that strong too.
+
+\C[16]Require\C[0]
+After Ek – First Muay Thai Lesson 8(\c[1]\v[146]\c[0]/16)
+</quest>
+
+<quest 54:Maleena Questline #4 - Training Together|1|0>
+
+
+I’m part of the dojo now.
+Maybe it’s time to train with her too—
+get closer, see how she moves.
+
+Talk to Maleena at 6 AM (Ek's Dojo)
+</quest>
+
+<quest 55:Maleena Questline #5 - Awakening|2|0>
+
+
+Maleena’s probably training again tonight.
+Wouldn’t hurt to swing by.
+Hehe... just checking.
+
+Talk to Maleena at 9 PM (Valor Grounds)
+
+\C[16]Require\C[0]
+After Elphaba - Forbidden Room 6(\c[1]\v[40]\c[0]/28)
+</quest>
+
+<quest 56:Maleena Questline #6 - Shrine Restore|1|0>
+
+
+That broken shrine’s been stuck in my head.
+Might be worth asking Ek 
+about it in the morning.
+
+Talk to Maleena at 6 AM (Ek's Dojo)
+</quest>
+
+<quest 57:Maleena Questline #7 - Enhanced Training|2|0>
+
+
+She's getting stronger.
+So am I.
+Maybe it's time we train a little deeper—
+together.
+But before that, 
+I should test my strength first.
+
+Talk to Maleena at 6 PM (Valor Grounds)
+
+\C[16]Require\C[0]
+After Ek – Transformation Control 9(\c[1]\v[146]\c[0]/18)
+Maleena Affection: \c[2]\v[165]\c[0]/60
+</quest>
+
+<quest 58:Maleena Questline #8 - The Voice|1|0>
+
+
+She said she felt something deeper—
+in the woods.
+Something old. Familiar.
+I don’t know what we’re walking into—
+but I know she’s not going alone.
+
+Talk to Maleena at 1 PM (Forest)
+
+\C[16]Require\C[0]
+After Pixie – I’m Special 13(\c[1]\v[34]\c[0]/23)
+After Elphaba - Basic Shelf Access 7(\c[1]\v[40]\c[0]/31)
+Maleena Affection: \c[2]\v[165]\c[0]/70
+</quest>
+
+<quest 59:Maleena Questline #9 - Trial of the Forest|3|0>
+
+
+This forest’s full of monsters.
+Perfect place to train, honestly.
+Let’s head deeper—
+and yeah, 
+I’m pretty sure there’s a boss waiting for us.
+
+\C[16]Require\C[0]
+Defeat Dryad - the Forest Boss
+</quest>
+
+<quest 60:Maleena Questline #10 - Seek Pixie’s Help|1|0>
+
+
+That note we found was written—
+in weird symbols.
+No clue what it says—
+but I know someone who might.
+Pixie, here we go.
+
+Talk to Pixie at 4 PM (Daisy’s Farm)
+</quest>
+
+<quest 61:Maleena Questline #11 - Personal Lab Setup|3|0>
+
+
+If I’m going to brew anything from—
+that scroll,
+I’ll need a place to do it.
+Time to turn the basement—
+into something useful.
+
+\C[16]Require\C[0]
+\I[295]Woods: 70
+\I[305]Stones: 60
+\I[297]Nails: 90
+</quest>
+
+<quest 62:Maleena Questline #12 - Herb Supply|1|0>
+
+
+The lab's finally ready.
+Time to check in with Maleena—
+she said she could help with herbs.
+Let’s go report in.
+
+Talk to Maleena at 1 PM (Forest)
+</quest>
+
+<quest 63:Maleena Questline #13 - Hot Spring Rest|1|0>
+
+
+She mentioned she used to bathe somewhere—
+out here near the forest.
+Never really thought much of it—
+but after all this, 
+I could really use a break.
+And maybe... so could she.
+
+\C[16]Require\C[0]
+Maleena Affection: \c[2]\v[165]\c[0]/80
+</quest>
+
+<quest 64:Maleena Questline #14 - Greedy Adventure|1|0>
+
+
+Maleena’s been acting different lately.
+Impatient, restless—
+not like her usual self.
+I don’t know what she’s chasing...
+but I’ve got a bad feeling about it.
+
+Interact with the Ruin’s Gate
+
+\C[16]Require\C[0]
+Maleena Affection: \c[2]\v[165]\c[0]/90
+</quest>
+
+<quest 65:Maleena Questline #15 - Nighttime Encounter|1|0>
+
+
+She’s been quiet since then.
+Like something’s weighing on her.
+Maybe it’s the pressure.
+Maybe it’s guilt.
+I should check on her tonight—
+just to be sure.
+
+Talk to Maleena at 9 PM (Valor Grounds)
+
+\C[16]Require\C[0]
+Maleena Affection: \c[2]\v[165]\c[0]/100
+</quest>
+
+<quest 66:Maleena Questline #16 - Return to the Spring|1|0>
+
+
+We’ve been making good progress lately.
+Fighting hard. Pushing limits.
+A good soak might be exactly what we need.
+Better after breaking a sweat together.
+
+After exiting the ruin, 
+ask Maleena to revisit the Hot Spring
+
+\C[16]Require\C[0]
+Maleena Affection: \c[2]\v[165]\c[0]/110
+</quest>
+
+<quest 67:Maleena Questline #17 - Reconstructed Hot Spring|3|0>
+
+
+The place could use a little love.
+She mentioned rebuilding it...
+honestly, not a bad idea.
+Somewhere to unwind—
+just the two of us.
+
+\C[16]Require\C[0]
+\I[295]Woods: 80
+\I[305]Stones: 40
+\I[297]Nails: 70
+</quest>
+
+<quest 69:Maleena Questline #18 - ???|1|0>
+
+
+There’s more to come—
+but not just yet.
+The road ahead’s still under wraps.
+When she’s ready, we’ll walk it together.
+
+\C[21]Locked – future update\C[0]
+</quest>
+
+
+
+
+
+
+
+
+
+
+
+<quest 70:Moo Questline #1 - The Secret Resident|1|0>
+
+
+Auntie Daisy’s been acting strange lately.  
+Something about that locked room.  
+Hoofprints. Soft sounds.  
+Who—or what—is she hiding in there?
+
+Check Daisy (6 AM - Daisy's Barn)
+
+\C[16]Required\C[0]  
+After Elphaba – Forbidden Room 6(\c[1]\v[40]\c[0]/28)
+</quest>
+
+<quest 71:Moo Questline #2 - Warming Up|2|0>
+
+
+The animals follow me around now.  
+But Moo... she just stares.  
+She’s not like them.  
+Maybe a gift... like you would for a girl?
+
+Talk to Moo at 6 AM 
+(Moo’s Room - Daisy's Barn)
+
+\C[16]Required\C[0]  
+After Maleena – Herb Picking 2(\c[1]\v[166]\c[0]/6)  
+Moo Affection: \c[2]\v[461]\c[0]/20  
+Items: 1 Crop (any), 1 Berry/Apple (any), 
+1 Herb (\i[183]Healing Root or 
+\i[184]Moonlight Lily)  
+</quest>
+
+<quest 89:Moo Questline #3 - Messy Girl|1|0>
+
+
+Her room’s a mess.  
+Old hay. Baskets knocked over.  
+Figured I’d clean up a little...  
+
+Talk to Moo at 6 AM 
+(Moo’s Room - Daisy's Barn)
+</quest>
+
+<quest 72:Moo Questline #4 - Patch It Up|2|0>
+
+
+I think I messed up.  
+She looked at me... different.  
+Quieter. Hurt.  
+Time to fix it—properly.
+
+Talk to Moo at 6 AM 
+(Moo’s Room - Daisy's Barn)
+
+\C[16]Required\C[0]  
+Items: \i[184]Moonlight Lily and 
+\i[185]Nightshade Bloom  
+</quest>
+
+<quest 73:Moo Questline #5 - The Milk of Wonder|1|0>
+
+
+She’s happy now.  
+Smiling, cuddling... trusting me.  
+But I’m not.  
+She’s naked. And those tits... 
+keep crossing lines.
+
+Talk to Daisy at 6 AM (Daisy's Barn)
+
+\C[16]Required\C[0]  
+Moo Affection: \c[2]\v[461]\c[0]/30
+After Daisy - Daytime Routine 24(\c[1]\v[22]\c[0]/46) 
+</quest>
+
+<quest 74:Moo Questline #6 - Milk Tank|1|0>
+
+
+I thought she liked it.  
+But lately... she seems off.  
+Less moans. Less milk.  
+Maybe I’ve milked her a bit... 
+too many times? Better ask Auntie Daisy.
+
+Talk to Daisy at 6 AM (Daisy's Barn)
+
+\C[16]Required\C[0]  
+Moo Affection: \c[2]\v[461]\c[0]/40
+</quest>
+
+<quest 75:Moo Questline #7 - ???|1|0>
+
+
+She’s been hotter lately.  
+Hungrier. Closer.  
+If I touch her now... I might not stop.  
+Better wait—until she begs for it.
+
+\C[21]Locked – future update\C[0]
+</quest>
+
+
+
+
+
+
+
+
+
+
+
+<quest 76:Daisy Questline #23 - Picking Up the Slack|1|0>
+
+
+I saw the look on Daisy’s face today.
+She didn’t say it, but it hurt.
+Maybe... this mess is partly my fault.
+Helping more feels like the least I can do...
+
+Talk to Daisy 3 PM (Daisy's Corn Field)
+
+\C[16]Required\C[0]  
+After Douie - Cucumber Field 3 10(\c[1]\v[36]\c[0]/19)
+</quest>
+
+<quest 77:Daisy Questline #24 - New Member|1|0>
+
+
+Aunt Douie brought over a stallion.
+Big, loud, and full of energy.
+She says he’s a gift to the farm.
+Feels more like a Ferrari with hooves.
+Better go check it out.
+
+Talk to Daisy 3 PM (Daisy's Corn Field)
+
+\C[16]Required\C[0]  
+After Mae - Weekend Horse Trip 12(\c[1]\v[38]\c[0]/15)
+</quest>
+
+<quest 78:Daisy Questline #25 - Daytime Routine|1|0>
+
+
+Mae might’ve been half-joking...
+but she wasn’t all that wrong.
+The stallion makes work way faster—
+still not sure Auntie Daisy can handle him solo.
+Better check in and give her a hand.
+
+Talk to Daisy at 6 AM (Daisy's Barn)
+
+\C[16]Required\C[0]  
+After Elphaba - Forbidden Room 6(\c[1]\v[40]\c[0]/28)
+</quest>
+
+<quest 79:Daisy Questline #26 - ???|1|0>
+
+
+The stallion helps, no doubt about that.  
+But the farm’s still too much for one person.  
+It’s better... just not enough.  
+I need to find another way.
+
+\C[21]Locked – future update\C[0]
+</quest>
+
+
+
+
+
+
+
+
+
+<quest 80:Horse Questline #1 - ???|1|0> 
+
+
+We’ve got him in check now.  
+Not just a stallion—he’s family.  
+Still does the heavy lifting, of course.  
+
+\C[21]Locked – future update\C[0]
+</quest>
+
+
+
+
+
+
+
+
+
+<quest 81:Horse/Me Questline #1 - What the Hell?|1|1>
+
+
+Okay... what the hell?  
+Either Elphaba hit me with some witch 
+curse, or I took a shovel to the head.  
+I turned into a damn horse.  
+Better check again tonight to be sure.  
+
+Check the Horse at 6 PM, Daisy's Barn
+
+\C[16]Required\C[0]  
+\n[5] Comfort Levels: \c[1]\v[463]\c[0]/30
+</quest>
+
+<quest 82:Horse/Me Questline #2 - Late-Night Return|1|1>
+
+
+Bit surprised Auntie Daisy's taking 
+Mae's advice...  
+Well... I’m a horse now. 
+Help with this, help with that...
+This counts as helping too... right?
+
+Check the Horse at 6 PM, Daisy's Barn
+</quest>
+
+<quest 83:Horse/Me Questline #3 - Midnight Routine|1|1>
+
+
+That feeling was unreal.  
+And it’s stuck in my head.  
+I know I shouldn’t—
+but I can’t stop thinking.  
+Tonight... I’ll sneak in again.  
+
+Check the Horse at 6 PM, Daisy's Barn
+
+\C[16]Required\C[0]  
+\n[5] Comfort Levels: \c[1]\v[463]\c[0]/50
+</quest>
+
+<quest 84:Horse/Me Questline #4 - ???|1|1>
+
+
+That was unexpected...  
+Didn’t think she’d go that far.  
+Left my soul somewhere in that barn.  
+Not complaining. 
+Honestly... 
+I’m looking forward to what’s next.  
+
+\C[21]Locked – future update\C[0]  
+</quest>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<quest 85:Horse (Share) Questline #1 - Checking|1|1>
+
+
+Lately, things keep bugging me.  
+I haven’t been sleeping well.  
+It’s been raining, and I’m not sure 
+the barn’s okay.  
+Might as well check it tonight.  
+
+Check the Horse at 6 PM, Daisy's Barn
+
+\C[16]Required\C[0]  
+\n[5] Comfort Levels: \c[1]\v[463]\c[0]/30
+</quest>
+
+<quest 86:Horse (Share) Questline #2 - Late-Night Return|1|1>
+
+
+...That wasn’t normal.  
+But I think she’s doing it for the farm.  
+Maybe this is what Mae meant... 
+or maybe not.  
+Either way—I need to see more.
+
+Check the Horse at 6 PM, Daisy's Barn
+</quest>
+
+<quest 87:Horse (Share) Questline #3 - Midnight Routine|1|1>
+
+
+I think this is normal... right?  
+I’ve heard horse owners do this stuff.  
+It looked... kinda interesting.  
+And honestly? I don’t think I hate it.    
+
+Check the Horse at 6 PM, Daisy's Barn
+
+\C[16]Required\C[0]  
+\n[5] Comfort Levels: \c[1]\v[463]\c[0]/50
+</quest>
+
+<quest 88:Horse (Share) Questline #4 - ???|1|1>
+
+
+That wasn’t just routine.  
+I can’t believe I’m jealous of 
+a damn horse.  
+Alright... this is getting interesting.  
+Not sure if I wanna watch or... join.  
+
+\C[21]Locked – future update\C[0]  
+</quest>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,57 @@
+# 每日定时打包汉化文件
+# Build Chinese localization patch daily
+
+name: Chinese Patch Builder
+on:
+  schedule:
+    - cron: "0 18 * * 0"
+
+env:
+  PARATRANZ_TOKEN: ${{ secrets.PARATRANZ_TOKEN }}
+
+jobs:
+  ci:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Install Poetry  # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#caching-packages
+        working-directory: ${{ github.workspace }}/DLoMC-Localization
+        run: pipx install poetry
+
+      - name: Set Up Python ${{ matrix.python-version }} and Dependents
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+
+      - name: Initialize Project
+        working-directory: ${{ github.workspace }}/DLoMC-Localization
+        run: poetry install
+
+      - name: Process the Chinese Localization Patch
+        working-directory: ${{ github.workspace }}/DLoMC-Localization
+        run: |
+          python -m main
+
+      - name: Capture the patch zip file
+        uses: actions/upload-artifact@v4
+        with:
+          name: Chinese Patch - ${{ github.sha }}
+          path: ${{ github.workspace }}/DLoMC-Localization/dist/*.zip
+
+      - name: Release the patch zip file
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ github.workspace }}/DLoMC-Localization/dist/*.zip
