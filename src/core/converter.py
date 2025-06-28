@@ -1,14 +1,26 @@
+"""Convert local rpg data to paratranz recognized format to upload"""
+
 import json
 import re
 from pathlib import Path
 from typing import Callable
 
 from loguru._logger import Logger
+from pydantic import BaseModel
 
-from src.config import *
+from src.config import GAME_ROOT, DIR_CONVERT, DIR_DOWNLOAD
 from src.core.project import Project
 from src.log import logger
-from src.schema import *
+from src.schema.enum import FileType, Code
+from src.schema.model import (
+    ParatranzModel,
+    GameMapModel,
+    GameSystemModel,
+    GameItemModel,
+    GameSkillModel,
+    GameCommonEventModel,
+    GameMapInfoModel
+)
 
 
 class Converter:
@@ -66,6 +78,21 @@ class Converter:
                 self.logger.bind(filepath=relative_filepath).debug("Converting file successfully.")
 
     def _convert_general(self, filepath: Path, type_: FileType, process_function: Callable[..., list[ParatranzModel]], **kwargs) -> list[ParatranzModel]:
+        """
+
+        :param filepath:
+        :param type_:
+        :param process_function:
+            custom process function, has args:
+            filepath: Path,
+            original: list | dict | str,
+            translation: list[ParatranzModel] | None,
+            translation_mapping: dict[str, ParatranzModel] | None,
+            translation_flag: bool,
+            **kwargs
+        :param kwargs:
+        :return:
+        """
         relative_filepath = filepath.relative_to(GAME_ROOT)
         with filepath.open("r", encoding="utf-8") as fp:
             original = Project().read(fp, type_)
@@ -91,6 +118,7 @@ class Converter:
         """
         txt, <game_root>/www/js/plugins/Galv_QuestLog.js
         title, line1 and line2 do not translate
+
         :param filepath: quest filepath
         :param type_: file type
         :return: array of ParatranzModel
@@ -107,7 +135,7 @@ class Converter:
                 ParatranzModel(
                     key=id_,
                     original=quest,
-                    translation=(translation_mapping.get(id_, "") if translation_flag else "").translation if translation_mapping.get(id_) else ""
+                    translation=(translation_mapping.get(id_, "") if translation_flag else "").translation if translation_mapping.get(id_) else ""  # noqa
                 )
                 for quest, id_ in quests
             ]
@@ -120,7 +148,8 @@ class Converter:
 
     def _convert_map(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
         """
-        json, similar to common events
+        json, similar to CommonEvents
+
         :param filepath: map filepath
         :param type_: file type
         :return: array of ParatranzModel
@@ -133,7 +162,13 @@ class Converter:
 
             display_name_translation = translation_mapping.get("displayName", "") if translation_flag else ""
             display_name_translation = display_name_translation.translation if display_name_translation else ""
-            models = [ParatranzModel(key="displayName", original=original.displayName, translation=display_name_translation)]
+            models = [
+                ParatranzModel(
+                    key="displayName",
+                    original=original.displayName,
+                    translation=display_name_translation
+                )
+            ]
             for idx_event, event in enumerate(original.events):
                 if event is None:
                     continue
@@ -147,7 +182,11 @@ class Converter:
                         key = f"{event_id} | {event_name} | {idx_page} | {idx_unit} | {unit_code}"
                         if Code.DIALOG == unit_code:
                             original_value = unit.parameters[0]  # str
-                            translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
+                            translation_value = [
+                                model.translation
+                                for model in translation
+                                if model.original == original_value
+                            ] if translation_flag else ""
                             translation_value = translation_value[0] if translation_value else ""
                             if not flag_conversation:
                                 flag_conversation = True
@@ -158,7 +197,11 @@ class Converter:
                                     idx_ += 1
                         elif Code.CHOICE == unit_code:
                             original_value = "\n".join(unit.parameters[0])  # list[str]
-                            translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
+                            translation_value = [
+                                model.translation
+                                for model in translation
+                                if model.original == original_value
+                            ] if translation_flag else ""
                             translation_value = translation_value[0] if translation_value else ""
                             if not flag_choice:
                                 flag_choice = True
@@ -188,140 +231,20 @@ class Converter:
             process_function=_process,
         )
 
-    def _convert_system(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
-        """
-        special json
-        :param filepath: system filepath
-        :param type_: file type
-        :return: array of ParatranzModel
-        """
-        def _process(**kwargs):
-            original: GameSystemModel = GameSystemModel.model_validate(kwargs["original"])
-            translation_flag = kwargs["translation_flag"]
-            translation: list[ParatranzModel] | None = kwargs["translation"]
-            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
-
-            models = []
-            game_title_original = original.gameTitle
-            game_title_translation = translation_mapping["gameTitle"].translation if translation_flag else ""
-            models.append(ParatranzModel(key="gameTitle", original=game_title_original, translation=game_title_translation))
-
-            locale_original = original.locale
-            locale_translation = translation_mapping["locale"].translation if translation_flag else ""
-            models.append(ParatranzModel(key="locale", original=locale_original, translation=locale_translation))
-
-            def _convert_lists(list_: list, key_prefix: str, models_: list):
-                for idx_, item in enumerate(list_):
-                    if not item:
-                        continue
-
-                    key_ = f"{key_prefix} | {idx_}"
-                    original_ = item
-                    translation_ = [model.translation for model in translation if model.original == original_] if translation_flag else ""
-                    translation_ = translation_[0] if translation_ else ""
-                    models_.append(ParatranzModel(key=key_, original=original_, translation=translation_))
-                return models_
-
-            models = _convert_lists(original.skillTypes, "skillTypes", models)
-            models = _convert_lists(original.terms.basic, "terms | basic", models)
-            models = _convert_lists(original.terms.commands, "terms | commands", models)
-            models = _convert_lists(original.terms.params, "terms | params", models)
-
-            for key, value in original.terms.messages.items():
-                key = f"terms | messages | {key}"
-                message_original = value
-                message_translation = translation_mapping.get(key, "") if translation_flag else ""
-                message_translation = message_translation.translation if message_translation else ""
-                models.append(ParatranzModel(key=f"terms | messages | {key}", original=message_original, translation=message_translation))
-
-            return models
-
-        return self._convert_general(
-            filepath=filepath,
-            type_=type_,
-            process_function=_process,
-        )
-
-    def _convert_items(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
-        """
-        json, similar to skills
-        :param filepath: items filepath
-        :param type_: file type
-        :return: array of ParatranzModel
-        """
-        def _process(**kwargs):
-            original: list[GameItemModel] = [GameItemModel.model_validate(_) for _ in kwargs["original"] if _]
-            translation_flag = kwargs["translation_flag"]
-            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
-
-            models = []
-            for idx, item in enumerate(original):
-                if not any((item.name, item.description)):
-                    continue
-
-                if item.name:
-                    key = f"{item.id} | name"
-                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
-                    translation_value = translation_value.translation if translation_value else ""
-                    models.append(ParatranzModel(key=key, original=item.name, translation=translation_value, context=f"{item.id} | {item.name}\n{item.description}"))
-                if item.description:
-                    key = f"{item.id} | description"
-                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
-                    translation_value = translation_value.translation if translation_value else ""
-                    models.append(ParatranzModel(key=key, original=item.description, translation=translation_value, context=f"{item.id} | {item.name}\n{item.description}"))
-            return models
-
-        return self._convert_general(
-            filepath=filepath,
-            type_=type_,
-            process_function=_process,
-        )
-
-    def _convert_skills(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
-        """
-        json, similar to items
-        :param filepath: skills filepath
-        :param type_: file type
-        :return: array of ParatranzModel
-        """
-        def _process(**kwargs):
-            original: list[GameSkillModel] = [GameSkillModel.model_validate(_) for _ in kwargs["original"] if _]
-            translation_flag = kwargs["translation_flag"]
-            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
-
-            models = []
-            for idx, skill in enumerate(original):
-                if not any((skill.name, skill.description)):
-                    continue
-
-                if skill.name:
-                    key = f"{skill.id} | name"
-                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
-                    translation_value = translation_value.translation if translation_value else ""
-                    models.append(ParatranzModel(key=f"{skill.id} | name", original=skill.name, translation=translation_value, context=f"{skill.id} | {skill.name}\n{skill.description}"))
-                if skill.description:
-                    key = f"{skill.id} | description"
-                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
-                    translation_value = translation_value.translation if translation_value else ""
-                    models.append(ParatranzModel(key=f"{skill.id} | description", original=skill.description, translation=translation_value, context=f"{skill.id} | {skill.name}\n{skill.description}"))
-
-            return models
-
-        return self._convert_general(
-            filepath=filepath,
-            type_=type_,
-            process_function=_process,
-        )
-
     def _convert_common_events(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
         """
         json, similar to maps
+
         :param filepath: common_events filepath
         :param type_: file type
         :return: array of ParatranzModel
         """
         def _process(**kwargs):
-            original: list[GameCommonEventModel] = [GameCommonEventModel.model_validate(_) for _ in kwargs["original"] if _]
+            original: list[GameCommonEventModel] = [
+                GameCommonEventModel.model_validate(_)
+                for _ in kwargs["original"]
+                if _
+            ]
             translation_flag = kwargs["translation_flag"]
             translation: list[ParatranzModel] | None = kwargs["translation"]
 
@@ -333,7 +256,11 @@ class Converter:
                 for idx_unit, unit in enumerate(event.list):
                     if Code.DIALOG == unit.code:
                         original_value = unit.parameters[0]  # str
-                        translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
+                        translation_value = [
+                            model.translation
+                            for model in translation
+                            if model.original == original_value
+                        ] if translation_flag else ""
                         translation_value = translation_value[0] if translation_value else ""
                         if not flag_conversation:
                             flag_conversation = True
@@ -344,7 +271,11 @@ class Converter:
                                 idx_ += 1
                     elif Code.CHOICE == unit.code:
                         original_value = "\n".join(unit.parameters[0])  # list[str]
-                        translation_value = [model.translation for model in translation if model.original == original_value] if translation_flag else ""
+                        translation_value = [
+                            model.translation
+                            for model in translation
+                            if model.original == original_value
+                        ] if translation_flag else ""
                         translation_value = translation_value[0] if translation_value else ""
                         if not flag_choice:
                             flag_choice = True
@@ -373,15 +304,152 @@ class Converter:
             process_function=_process,
         )
 
+    def _convert_system(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
+        """
+        special json
+        :param filepath: system filepath
+        :param type_: file type
+        :return: array of ParatranzModel
+        """
+        def _process(**kwargs):
+            original: GameSystemModel = GameSystemModel.model_validate(kwargs["original"])
+            translation_flag = kwargs["translation_flag"]
+            translation: list[ParatranzModel] | None = kwargs["translation"]
+            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
+
+            models = []
+            game_title_original = original.gameTitle
+            game_title_translation = translation_mapping["gameTitle"].translation if translation_flag else ""
+            models.append(
+                ParatranzModel(
+                    key="gameTitle",
+                    original=game_title_original,
+                    translation=game_title_translation
+                )
+            )
+
+            locale_original = original.locale
+            locale_translation = translation_mapping["locale"].translation if translation_flag else ""
+            models.append(ParatranzModel(key="locale", original=locale_original, translation=locale_translation))
+
+            def _convert_lists(list_: list, key_prefix: str, models_: list):
+                for idx_, item in enumerate(list_):
+                    if not item:
+                        continue
+
+                    key_ = f"{key_prefix} | {idx_}"
+                    original_ = item
+                    translation_ = [
+                        model.translation
+                        for model in translation
+                        if model.original == original_
+                    ] if translation_flag else ""
+                    translation_ = translation_[0] if translation_ else ""
+                    models_.append(ParatranzModel(key=key_, original=original_, translation=translation_))
+                return models_
+
+            models = _convert_lists(original.skillTypes, "skillTypes", models)
+            models = _convert_lists(original.terms.basic, "terms | basic", models)
+            models = _convert_lists(original.terms.commands, "terms | commands", models)
+            models = _convert_lists(original.terms.params, "terms | params", models)
+
+            for key, value in original.terms.messages.items():
+                key = f"terms | messages | {key}"
+                message_original = value
+                message_translation = translation_mapping.get(key, "") if translation_flag else ""
+                message_translation = message_translation.translation if message_translation else ""
+                models.append(
+                    ParatranzModel(
+                        key=f"terms | messages | {key}",
+                        original=message_original,
+                        translation=message_translation
+                    )
+                )
+
+            return models
+
+        return self._convert_general(
+            filepath=filepath,
+            type_=type_,
+            process_function=_process,
+        )
+
+    def _convert_items_or_skills(self, filepath: Path, type_: FileType, *, Model: type[BaseModel]) -> list[ParatranzModel]:  # noqa
+        def _process(**kwargs):
+            original: list[Model] = [Model.model_validate(_) for _ in kwargs["original"] if _]
+            translation_flag = kwargs["translation_flag"]
+            translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
+
+            models = []
+            for idx, element in enumerate(original):
+                if not any((element.name, element.description)):
+                    continue
+
+                if element.name:
+                    key = f"{element.id} | name"
+                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
+                    translation_value = translation_value.translation if translation_value else ""
+                    models.append(
+                        ParatranzModel(
+                            key=key,
+                            original=element.name,
+                            translation=translation_value,
+                            context=f"{element.id} | {element.name}\n{element.description}"
+                        )
+                    )
+                if element.description:
+                    key = f"{element.id} | description"
+                    translation_value = translation_mapping.get(key, "") if translation_flag else ""
+                    translation_value = translation_value.translation if translation_value else ""
+                    models.append(
+                        ParatranzModel(
+                            key=key,
+                            original=element.description,
+                            translation=translation_value,
+                            context=f"{element.id} | {element.name}\n{element.description}"
+                        )
+                    )
+            return models
+
+        return self._convert_general(
+            filepath=filepath,
+            type_=type_,
+            process_function=_process,
+        )
+
+    def _convert_items(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
+        """
+        json, similar to Skills
+
+        :param filepath: items filepath
+        :param type_: file type
+        :return: array of ParatranzModel
+        """
+        return self._convert_items_or_skills(filepath, type_, Model=GameSkillModel)
+
+    def _convert_skills(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
+        """
+        json, similar to Items
+        :param filepath: skills filepath
+        :param type_: file type
+        :return: array of ParatranzModel
+        """
+        return self._convert_items_or_skills(filepath, type_, Model=GameItemModel)
+
     def _convert_map_infos(self, filepath: Path, type_: FileType) -> list[ParatranzModel]:
         """
         special json
+
         :param filepath: map infos filepath
         :param type_: file type
         :return: array of ParatranzModel
         """
         def _process(**kwargs):
-            original: list[GameMapInfoModel | None] = [GameMapInfoModel.model_validate(_) if _ is not None else None for _ in kwargs["original"]]
+            original: list[GameMapInfoModel | None] = [
+                GameMapInfoModel.model_validate(_)
+                if _ is not None else None
+                for _ in kwargs["original"]
+            ]
             translation_flag = kwargs["translation_flag"]
             translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
 
