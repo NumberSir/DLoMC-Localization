@@ -75,9 +75,8 @@ class Project:
                 raise TypeError
 
     def package(self):
-        """package result to zip file with password"""
+        """package result to zip file # TODO: with password"""
         (settings.filepath.root / settings.filepath.dist).mkdir(parents=True, exist_ok=True)
-
         model: ParatranzProjectModel = Paratranz().get_project_info()
         filename = f"[汉化词典] v{settings.game.version}-chs-{settings.project.version}-{model.stats.tp*10000:.0f}-{model.stats.cp*10000:.0f}.zip"
         with zf(settings.filepath.root / settings.filepath.dist / filename, "w", compresslevel=9, compression=ZIP_DEFLATED) as zfp:
@@ -89,6 +88,7 @@ class Project:
                     arcname=filepath.relative_to(DIR_RESULT),
                     compresslevel=9
                 )
+        self.logger.bind(filepath=settings.filepath.dist / filename).success("Successfully package Chinese patch.")
 
     @property
     def logger(self) -> Logger:
