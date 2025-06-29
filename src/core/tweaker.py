@@ -104,6 +104,7 @@ class Tweaker:
             "Confirm No": "否"
         }
         plugin.parameters |= name_mapping
+        self.logger.bind(filepath="YEP_SaveCore").debug("Tweak game plugin successfully.")
         return plugin
 
     def _tweak_game_plugin_time_system(self, plugin: GamePluginModel) -> GamePluginModel:
@@ -121,6 +122,7 @@ class Tweaker:
             "Play Time Word": "游玩时间",
         }
         plugin.parameters |= name_mapping
+        self.logger.bind(filepath="MOG_TimeSystem").debug("Tweak game plugin successfully.")
         return plugin
 
     def _tweak_game_plugin_questlog(self, plugin: GamePluginModel) -> GamePluginModel:
@@ -143,6 +145,7 @@ class Tweaker:
             "Pop Fail Objective": "任务目标未完成："
         }
         plugin.parameters |= name_mapping
+        self.logger.bind(filepath="Galv_QuestLog").debug("Tweak game plugin successfully.")
         return plugin
 
     def _tweak_game_plugin_recipe_crafting(self, plugin: GamePluginModel) -> GamePluginModel:
@@ -164,6 +167,7 @@ class Tweaker:
             "Dismantle Fail": "什么都没得到！",
         }
         plugin.parameters |= name_mapping
+        self.logger.bind(filepath="RecipeCrafting").debug("Tweak game plugin successfully.")
         return plugin
 
     def _tweak_game_plugin_credit(self, plugin: GamePluginModel) -> GamePluginModel:
@@ -196,6 +200,7 @@ class Tweaker:
         revert_data = json.dumps([json.dumps(_, ensure_ascii=False) for _ in parsed_data], ensure_ascii=False)
         plugin.parameters["Credit Data"] = revert_data
         plugin.parameters["Command Name"] = "致谢名单"
+        self.logger.bind(filepath="SRD_CreditsPlugin").debug("Tweak game plugin successfully.")
         return plugin
 
     @property
