@@ -1,7 +1,7 @@
 import contextlib
 import shutil
 from pathlib import Path
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 
 import httpx
 from loguru._logger import Logger
@@ -65,8 +65,15 @@ class Paratranz:
         except httpx.ConnectError as e:
             self.logger.error(f"Error downloading artifacts: {e}")
             raise
-        with open(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip", "wb") as fp:
-            fp.write(content)
+        try:
+            with open(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip", "wb") as fp:
+                fp.write(content)
+        except BadZipFile as e:
+            self.logger.error(f"Download artifact might failed due to some reason, try again: {e}")
+            raise
+        except Exception as e:
+            self.logger.error(f"Error opening artifacts: {e}")
+            raise
 
     def _extract_artifacts(self):
         with ZipFile(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip") as zfp:
