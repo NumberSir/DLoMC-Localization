@@ -67,6 +67,8 @@ class Paratranz:
             raise
 
         self.logger.info(f"Artifact size: {len(content)}")
+        if len(content) <= 52:
+            self.logger.bind(filepath=content).warning("Artifact size too small")
         with open(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip", "wb") as fp:
             fp.write(content)
 
