@@ -65,19 +65,21 @@ class Paratranz:
         except httpx.ConnectError as e:
             self.logger.error(f"Error downloading artifacts: {e}")
             raise
+
+        self.logger.info(f"Artifact size: {len(content)}")
+        with open(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip", "wb") as fp:
+            fp.write(content)
+
+    def _extract_artifacts(self):
         try:
-            with open(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip", "wb") as fp:
-                fp.write(content)
+            with ZipFile(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip") as zfp:
+                zfp.extractall(settings.filepath.root / settings.filepath.tmp)
         except BadZipFile as e:
             self.logger.error(f"Download artifact might failed due to some reason, try again: {e}")
             raise
         except Exception as e:
             self.logger.error(f"Error opening artifacts: {e}")
             raise
-
-    def _extract_artifacts(self):
-        with ZipFile(settings.filepath.root / settings.filepath.tmp / "paratranz_export.zip") as zfp:
-            zfp.extractall(settings.filepath.root / settings.filepath.tmp)
 
         shutil.copytree(
             settings.filepath.root / settings.filepath.tmp / "utf8",
