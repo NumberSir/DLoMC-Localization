@@ -8,11 +8,19 @@ on:
   workflow_dispatch:
 
 env:
+  GAME_VERSIONS: '0.3.2.1'
+  PARATRANZ_PROJECT_ID: '6896'
   PARATRANZ_TOKEN: ${{ secrets.PARATRANZ_TOKEN }}
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: [ "3.10" ]
+        os: [ windows-latest ]
+
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Get current time
         id: time
@@ -24,10 +32,10 @@ jobs:
       - name: Install Poetry  # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#caching-packages
         run: pipx install poetry
 
-      - name: Set Up Python 3.10 and Dependents
+      - name: Set Up Python ${{ matrix.python-version }} and Dependents
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.python-version }}
           cache: 'poetry'
           cache-dependency-path: '**/poetry.lock'
 
