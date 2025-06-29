@@ -11,14 +11,8 @@ env:
   PARATRANZ_TOKEN: ${{ secrets.PARATRANZ_TOKEN }}
 
 jobs:
-  ci:
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.10"]
-        os: [ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
+  build:
+    runs-on: windows-latest
     steps:
       - name: Get current time
         id: time
