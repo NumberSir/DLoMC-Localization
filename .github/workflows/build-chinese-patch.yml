@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  GAME_VERSIONS: '0.3.2.1'
+  GAME_VERSION: '0.3.2.1'
   PARATRANZ_PROJECT_ID: '6896'
   PARATRANZ_TOKEN: ${{ secrets.PARATRANZ_TOKEN }}
 
