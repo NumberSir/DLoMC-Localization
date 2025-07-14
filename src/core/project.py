@@ -10,7 +10,8 @@ from loguru._logger import Logger
 from src.config import settings, DIR_RESULT
 from src.core.paratranz import Paratranz
 from src.log import logger
-from src.schema import *
+from src.schema.enum import FileType
+from src.schema.model import ParatranzProjectModel
 
 
 class Project:
@@ -67,7 +68,7 @@ class Project:
             case FileType.QUEST | FileType.RECIPES:  # txt
                 self.logger.debug(f"Reading {type_}")
                 return fp.read()
-            case FileType.MAP | FileType.SYSTEM | FileType.MAPINFOS | FileType.ITEMS | FileType.SKILLS | FileType.COMMON_EVENTS:
+            case FileType.MAP | FileType.SYSTEM | FileType.MAPINFOS | FileType.ITEMS | FileType.SKILLS | FileType.COMMON_EVENTS:  # noqa: E501
                 self.logger.debug(f"Reading {type_}")
                 return json.load(fp)
             case _:
@@ -78,8 +79,16 @@ class Project:
         """package result to zip file # TODO: with password"""
         (settings.filepath.root / settings.filepath.dist).mkdir(parents=True, exist_ok=True)
         model: ParatranzProjectModel = Paratranz().get_project_info()
-        filename = f"[汉化词典] v{settings.game.version}-chs-{settings.project.version}-{model.stats.tp*10000:.0f}-{model.stats.cp*10000:.0f}.zip"
-        with zf(settings.filepath.root / settings.filepath.dist / filename, "w", compresslevel=9, compression=ZIP_DEFLATED) as zfp:
+        filename = (
+            f"[汉化词典] "
+            f"v{settings.game.version}"
+            f"-chs"
+            f"-{settings.project.version}"
+            f"-{model.stats.tp*10000:.0f}"
+            f"-{model.stats.cp*10000:.0f}"
+            f".zip"
+        )
+        with zf(settings.filepath.root / settings.filepath.dist / filename, "w", compresslevel=9, compression=ZIP_DEFLATED) as zfp:  # noqa: E501
             for filepath in DIR_RESULT.glob("**/*"):
                 if filepath.is_dir():
                     continue

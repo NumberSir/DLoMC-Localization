@@ -5,9 +5,10 @@ from loguru._logger import Logger
 from lxml import etree
 from lxml.etree import Element, ElementTree
 
-from src.config import *
+from src.config import DIR_RESULT, GAME_ROOT
+from src.config import settings
 from src.log import logger
-from src.schema import *
+from src.schema.model import GamePluginModel
 
 
 class Tweaker:

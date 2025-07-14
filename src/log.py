@@ -27,9 +27,12 @@ def add_filepath(record):
 logger_.remove()
 logger_ = logger_.patch(add_project_name)
 logger_ = logger_.patch(add_filepath)
-logger_.add(sink=sys.stdout, format=settings.project.log_format, colorize=True, level=settings.project.log_level)
-logger_.add(sink=DIR_LOGS / f"{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}.log", format=settings.project.log_format, colorize=False, level="INFO", encoding="utf-8", retention="1 week")
-logger_.add(sink=DIR_LOGS / f"{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}.debug", format=settings.project.log_format, colorize=False, level="DEBUG", encoding="utf-8", retention="1 week")
+
+NOW = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+FORMAT = settings.project.log_format
+logger_.add(sink=sys.stdout, format=FORMAT, colorize=True, level=settings.project.log_level)
+logger_.add(sink=DIR_LOGS / f"{NOW}.log", format=FORMAT, colorize=False, level="INFO", encoding="utf-8")
+logger_.add(sink=DIR_LOGS / f"{NOW}.debug", format=FORMAT, colorize=False, level="DEBUG", encoding="utf-8")
 logger = logger_
 
 

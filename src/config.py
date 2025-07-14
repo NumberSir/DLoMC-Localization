@@ -16,7 +16,9 @@ class ProjectSettings(BaseSettings):
     username: str = Field(default="Anonymous")
     email: str = Field(default="anonymous@email.com")
     log_level: str = Field(default="INFO")
-    log_format: str = Field(default="<g>{time:HH:mm:ss}</g> | [<lvl>{level:^7}</lvl>] | {extra[project_name]}{message:<35}")
+    log_format: str = Field(
+        default="<g>{time:HH:mm:ss}</g> | [<lvl>{level:^7}</lvl>] | {extra[project_name]}{message:<35}"
+    )
 
     @property
     def user_agent(self) -> str:

@@ -7,10 +7,19 @@ from typing import Callable
 from loguru._logger import Logger
 from pydantic import BaseModel
 
-from src.config import *
+from src.config import DIR_DOWNLOAD, DIR_RESULT, DIR_SPECIAL, GAME_ROOT
 from src.core.project import Project
 from src.log import logger
-from src.schema import *
+from src.schema.enum import FileType, Code
+from src.schema.model import (
+    ParatranzModel,
+    GameMapModel,
+    GameSystemModel,
+    GameItemModel,
+    GameSkillModel,
+    GameMapInfoModel,
+    GameCommonEventModel
+)
 
 
 class Restorer:
@@ -81,7 +90,11 @@ class Restorer:
         shutil.copytree(DIR_SPECIAL, DIR_RESULT, dirs_exist_ok=True)
         self.logger.debug("Restoring special files successfully.")
 
-    def _restore_general(self, filepath: Path, type_: FileType, process_function: Callable[..., list[BaseModel]|BaseModel|str], **kwargs) -> list[BaseModel] | BaseModel | str:
+    def _restore_general(
+        self, filepath: Path, type_: FileType,
+        process_function: Callable[..., list[BaseModel]|BaseModel|str],
+        **kwargs
+    ) -> list[BaseModel] | BaseModel | str:
         relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
         with filepath.open("r", encoding="utf-8") as fp:
             download = json.load(fp)
@@ -151,11 +164,11 @@ class Restorer:
                             if Code.DIALOG == unit.code == unit_code:
                                 if model.original != unit.parameters[0]:
                                     continue
-                                original.events[idx_event].pages[idx_page_].list[idx_unit_].parameters[0] = model.translation
+                                original.events[idx_event].pages[idx_page_].list[idx_unit_].parameters[0] = model.translation  # noqa: E501
                             elif Code.CHOICE == unit.code == unit_code:
                                 if model.original != "\n".join(unit.parameters[0]):
                                     continue
-                                original.events[idx_event].pages[idx_page_].list[idx_unit_].parameters[0] = model.translation.split("\n")
+                                original.events[idx_event].pages[idx_page_].list[idx_unit_].parameters[0] = model.translation.split("\n")  # noqa: E501
 
             return original
 
@@ -216,7 +229,10 @@ class Restorer:
 
     def _restore_items(self, filepath: Path, type_: FileType) -> list[BaseModel]:
         def _process(**kwargs):
-            original: list[GameItemModel] = [GameItemModel.model_validate(_) if _ is not None else _ for _ in kwargs["original"]]
+            original: list[GameItemModel] = [
+                GameItemModel.model_validate(_) if _ is not None else _
+                for _ in kwargs["original"]
+            ]
             downloads: list[ParatranzModel] = [ParatranzModel.model_validate(_) for _ in kwargs["download"]]
 
             for model in downloads:
@@ -250,7 +266,10 @@ class Restorer:
 
     def _restore_skills(self, filepath: Path, type_: FileType) -> list[BaseModel]:
         def _process(**kwargs):
-            original: list[GameSkillModel] = [GameSkillModel.model_validate(_) if _ is not None else _ for _ in kwargs["original"]]
+            original: list[GameSkillModel] = [
+                GameSkillModel.model_validate(_) if _ is not None else _
+                for _ in kwargs["original"]
+            ]
             downloads: list[ParatranzModel] = [ParatranzModel.model_validate(_) for _ in kwargs["download"]]
 
             for model in downloads:
@@ -284,7 +303,10 @@ class Restorer:
 
     def _restore_common_events(self, filepath: Path, type_: FileType) -> list[BaseModel]:
         def _process(**kwargs):
-            original: list[GameCommonEventModel] = [GameCommonEventModel.model_validate(_) if _ is not None else _ for _ in kwargs["original"]]
+            original: list[GameCommonEventModel] = [
+                GameCommonEventModel.model_validate(_) if _ is not None else _
+                for _ in kwargs["original"]
+            ]
             downloads: list[ParatranzModel] = [ParatranzModel.model_validate(_) for _ in kwargs["download"]]
 
             for model in downloads:
@@ -322,7 +344,10 @@ class Restorer:
 
     def _restore_map_infos(self, filepath: Path, type_: FileType) -> BaseModel:
         def _process(**kwargs):
-            original: list[GameMapInfoModel] = [GameMapInfoModel.model_validate(_) if _ is not None else _ for _ in kwargs["original"]]
+            original: list[GameMapInfoModel] = [
+                GameMapInfoModel.model_validate(_) if _ is not None else _
+                for _ in kwargs["original"]
+            ]
             downloads: list[ParatranzModel] = [ParatranzModel.model_validate(_) for _ in kwargs["download"]]
 
             for model in downloads:

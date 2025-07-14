@@ -77,7 +77,12 @@ class Converter:
                     json.dump(datas, fp, ensure_ascii=False, indent=2)
                 self.logger.bind(filepath=relative_filepath).debug("Converting file successfully.")
 
-    def _convert_general(self, filepath: Path, type_: FileType, process_function: Callable[..., list[ParatranzModel]], **kwargs) -> list[ParatranzModel]:
+    def _convert_general(
+        self,
+        filepath: Path, type_: FileType,
+        process_function: Callable[..., list[ParatranzModel]],
+        **kwargs
+    ) -> list[ParatranzModel]:
         """
 
         :param filepath:

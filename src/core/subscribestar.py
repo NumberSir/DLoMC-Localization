@@ -24,7 +24,10 @@
 #         )
 #         age_confirm_input.clear()
 #         age_confirm_input.click()
-#         self.driver.execute_script("arguments[0].setAttribute('class', 'warning_xodal-dob_input is-set')", age_confirm_input)
+#         self.driver.execute_script(
+#             "arguments[0].setAttribute('class', 'warning_xodal-dob_input is-set')",
+#             age_confirm_input
+#         )
 #         self.logger.debug("Age comfirm script executed.")
 #
 #         age_confirm_button = self.driver.find_element(By.XPATH, "//button[@class='flat_button for-warning-18']")
@@ -83,7 +86,9 @@
 #         """published post contains download link"""
 #         self.driver.get(pinned_post_url)
 #         public_post_url = self.wait.until(
-#             EC.visibility_of_element_located((By.XPATH, "//a[contains(@href, 'subscribestar') and contains(text(), '(PC)')]"))
+#             EC.visibility_of_element_located(
+#                 (By.XPATH, "//a[contains(@href, 'subscribestar') and contains(text(), '(PC)')]")
+#             )
 #         ).get_attribute("href")
 #         self.logger.success(f"Public post url: {public_post_url}")
 #         return public_post_url
@@ -92,7 +97,9 @@
 #         """mega download link"""
 #         self.driver.get(published_post_url)
 #         download_link = self.wait.until(
-#             EC.visibility_of_element_located((By.XPATH, "//a[contains(text(), '(PC)') and contains(text(), 'Daily Lives of My Countryside')]"))
+#             EC.visibility_of_element_located(
+#                 (By.XPATH, "//a[contains(text(), '(PC)') and contains(text(), 'Daily Lives of My Countryside')]")
+#             )
 #         ).get_attribute("data-href")
 #         self.logger.success(f"Download link: {download_link}")
 #         return download_link
@@ -100,7 +107,9 @@
 #     def download(self, download_link: str):
 #         self.driver.get(download_link)
 #         download_button = self.wait.until(
-#             EC.visibility_of_element_located((By.XPATH, "//div[@class='mega-button positive js-default-download js-standard-download']"))
+#             EC.visibility_of_element_located(
+#                 (By.XPATH, "//div[@class='mega-button positive js-default-download js-standard-download']")
+#             )
 #         )
 #         download_button.click()
 #         self.logger.debug("Download button clicked.")
