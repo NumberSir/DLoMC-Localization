@@ -27,7 +27,8 @@
 ┣━ 📄LICENSE
 ┣━ 🐍main.py
 ┣━ ⚙️pyproject.toml
-┗━ 📄README.md
+┣━ 📄README.md
+┗━ ⚙️uv.lock
 ```
 
 # 使用前
@@ -46,17 +47,18 @@
 
 # 使用说明
 1. 安装本项目必需的库：
-    - 安装 [pipx](https://pipx.pypa.io/stable/installation/)
+    - 安装 [uv](https://docs.astral.sh/uv/#installation)
+      - Windows:
+       ```shell
+       powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+       ```
+      - macOS / Linux:
+      ```shell
+      curl -LsSf https://astral.sh/uv/install.sh | sh
+      ```
+    - 使用 uv 安装项目依赖
     ```shell
-    pip install pipx
-    ```
-    - 安装 [poetry](https://python-poetry.org/docs/#installation)
-    ```shell
-    pipx install poetry
-    ```
-    - 使用 poetry 安装项目依赖
-    ```shell
-    poetry install
+    uv sync
     ```
 2. ~~（尚未实现）自动下载最新版游戏，解压至 `./resource/01-original/<游戏名>`~~
 3. 创建 `./resource/01-original` 文件夹，手动下载游戏，解压至 `./resource/01-original` 目录下
@@ -126,7 +128,7 @@
    ```
 5. 运行根目录下的 `main.py`
    ```shell
-   python -m main
+   uv run main.py
    ```
 6. `./resource/02-paratranz/convert` 中会生成处理后的原文件，需要手动上传到 Paratranz 项目根目录下
 7. `./resource/02-paratranz/download` 中会生成自动下载好的原文-汉化字典，若没有说明你的 Paratranz 项目中没有汉化文件，或 Paratranz 项目结构不对
