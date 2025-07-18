@@ -30,22 +30,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Poetry  # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#caching-packages
-        run: pipx install poetry
+      - name: Install UV  # https://docs.astral.sh/uv/#installation
+        run: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-      - name: Set Up Python ${{ matrix.python-version }} and Dependents
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
-          cache-dependency-path: '**/poetry.lock'
+#      - name: Set Up Python ${{ matrix.python-version }} and Dependents
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: ${{ matrix.python-version }}
+#          cache: 'poetry'
+#          cache-dependency-path: '**/poetry.lock'
 
       - name: Initialize Project
-        run: poetry install
+        run: uv sync
 
       - name: Process the Chinese Localization Patch
         run: |
-          poetry run python main.py
+          uv run main.py
 
       - name: Capture the patch zip file
         uses: actions/upload-artifact@v4
