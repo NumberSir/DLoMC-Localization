@@ -24,8 +24,7 @@ from src.schema.model import (
 
 class Restorer:
     """restore local files from paratranz result"""
-    def __init__(self):
-        self._logger = logger.bind(project_name="Restore")
+    logger = logger.bind(project_name="Restore")
 
     def restore(self):
         self.logger.info("")
@@ -37,7 +36,7 @@ class Restorer:
 
             relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
             result_filepath = DIR_RESULT / relative_filepath.with_suffix("")
-            file_type = Project().categorize(result_filepath)
+            file_type = Project.categorize(result_filepath)
             if not file_type:
                 continue
 
@@ -101,7 +100,7 @@ class Restorer:
 
         filepath_original = GAME_ROOT / relative_filepath.with_suffix("")
         with filepath_original.open("r", encoding="utf-8") as fp:
-            original = Project().read(fp, type_)
+            original = Project.read(fp, type_)
 
         return process_function(
             filepath=filepath,
@@ -367,10 +366,6 @@ class Restorer:
             type_=type_,
             process_function=_process,
         )
-
-    @property
-    def logger(self) -> Logger:
-        return self._logger
 
 
 __all__ = [

@@ -13,8 +13,7 @@ from src.schema.model import GamePluginModel
 
 class Tweaker:
     """tiny tweaks"""
-    def __init__(self):
-        self._logger = logger.bind(project_name="Tweaker")
+    logger = logger.bind(project_name="Tweaker")
 
     def tweak(self):
         self.logger.info("")
@@ -22,7 +21,8 @@ class Tweaker:
         self.tweak_game_title()
         self.tweak_game_plugins()
 
-    def tweak_game_title(self):
+    @staticmethod
+    def tweak_game_title():
         with (GAME_ROOT / "www" / "index.html").open("r", encoding="utf-8") as fp:
             root: Element = etree.HTML(fp.read())
 
@@ -39,9 +39,10 @@ class Tweaker:
         tree: ElementTree = etree.ElementTree(root)
         (DIR_RESULT / "www").mkdir(parents=True, exist_ok=True)
         tree.write(DIR_RESULT / "www" / "index.html", encoding="utf-8", method="html")
-        self.logger.success("Tweak game title successfully.")
+        Tweaker.logger.success("Tweak game title successfully.")
 
-    def tweak_game_plugins(self):
+    @staticmethod
+    def tweak_game_plugins():
         with (GAME_ROOT / "www" / "js" / "plugins.js").open("r", encoding="utf-8") as fp:
             content = fp.read()
 
@@ -55,19 +56,19 @@ class Tweaker:
         ]
         for idx, plugin in enumerate(plugins):
             if plugin.name == "YEP_SaveCore":
-                plugins[idx] = self._tweak_game_plugin_save_core(plugin)
+                plugins[idx] = Tweaker._tweak_game_plugin_save_core(plugin)
                 continue
             if plugin.name == "MOG_TimeSystem":
-                plugins[idx] = self._tweak_game_plugin_time_system(plugin)
+                plugins[idx] = Tweaker._tweak_game_plugin_time_system(plugin)
                 continue
             if plugin.name == "Galv_QuestLog":
-                plugins[idx] = self._tweak_game_plugin_questlog(plugin)
+                plugins[idx] = Tweaker._tweak_game_plugin_questlog(plugin)
                 continue
             if plugin.name == "RecipeCrafting":
-                plugins[idx] = self._tweak_game_plugin_recipe_crafting(plugin)
+                plugins[idx] = Tweaker._tweak_game_plugin_recipe_crafting(plugin)
                 continue
             if plugin.name == "SRD_CreditsPlugin":
-                plugins[idx] = self._tweak_game_plugin_credit(plugin)
+                plugins[idx] = Tweaker._tweak_game_plugin_credit(plugin)
                 continue
 
         plugins = [
@@ -78,9 +79,10 @@ class Tweaker:
         (DIR_RESULT / "www" / "js").mkdir(parents=True, exist_ok=True)
         with (DIR_RESULT / "www" / "js" / "plugins.js").open("w", encoding="utf-8") as fp:
             fp.write(content)
-        self.logger.success("Tweak game plugins successfully.")
+        Tweaker.logger.success("Tweak game plugins successfully.")
 
-    def _tweak_game_plugin_save_core(self, plugin: GamePluginModel) -> GamePluginModel:
+    @staticmethod
+    def _tweak_game_plugin_save_core(plugin: GamePluginModel) -> GamePluginModel:
         """Save menu related function"""
         name_mapping = {
             "Load Command": "加载",
@@ -105,10 +107,11 @@ class Tweaker:
             "Confirm No": "否"
         }
         plugin.parameters |= name_mapping
-        self.logger.bind(filepath="YEP_SaveCore").debug("Tweak game plugin successfully.")
+        Tweaker.logger.bind(filepath="YEP_SaveCore").debug("Tweak game plugin successfully.")
         return plugin
 
-    def _tweak_game_plugin_time_system(self, plugin: GamePluginModel) -> GamePluginModel:
+    @staticmethod
+    def _tweak_game_plugin_time_system(plugin: GamePluginModel) -> GamePluginModel:
         """Time system ingame"""
         name_mapping = {
             "Day Week Names": "星期日,星期一,星期二,星期三,星期四,星期五,星期六",
@@ -123,10 +126,11 @@ class Tweaker:
             "Play Time Word": "游玩时间",
         }
         plugin.parameters |= name_mapping
-        self.logger.bind(filepath="MOG_TimeSystem").debug("Tweak game plugin successfully.")
+        Tweaker.logger.bind(filepath="MOG_TimeSystem").debug("Tweak game plugin successfully.")
         return plugin
 
-    def _tweak_game_plugin_questlog(self, plugin: GamePluginModel) -> GamePluginModel:
+    @staticmethod
+    def _tweak_game_plugin_questlog(plugin: GamePluginModel) -> GamePluginModel:
         """Quests ingame"""
         name_mapping = {
             "Categories": "主要任务|#ffcc66,支线任务|#ffff99,制作任务|#ccccff,日常任务|#FFF5E3",
@@ -146,10 +150,11 @@ class Tweaker:
             "Pop Fail Objective": "任务目标未完成："
         }
         plugin.parameters |= name_mapping
-        self.logger.bind(filepath="Galv_QuestLog").debug("Tweak game plugin successfully.")
+        Tweaker.logger.bind(filepath="Galv_QuestLog").debug("Tweak game plugin successfully.")
         return plugin
 
-    def _tweak_game_plugin_recipe_crafting(self, plugin: GamePluginModel) -> GamePluginModel:
+    @staticmethod
+    def _tweak_game_plugin_recipe_crafting(plugin: GamePluginModel) -> GamePluginModel:
         """Recipes ingame"""
         name_mapping = {
             "Main Menu String": "制作合成",
@@ -168,10 +173,11 @@ class Tweaker:
             "Dismantle Fail": "什么都没得到！",
         }
         plugin.parameters |= name_mapping
-        self.logger.bind(filepath="RecipeCrafting").debug("Tweak game plugin successfully.")
+        Tweaker.logger.bind(filepath="RecipeCrafting").debug("Tweak game plugin successfully.")
         return plugin
 
-    def _tweak_game_plugin_credit(self, plugin: GamePluginModel) -> GamePluginModel:
+    @staticmethod
+    def _tweak_game_plugin_credit(plugin: GamePluginModel) -> GamePluginModel:
         """Credits in main menu"""
         parameters = plugin.parameters
         rawdata: str = parameters["Credit Data"]
@@ -201,12 +207,8 @@ class Tweaker:
         revert_data = json.dumps([json.dumps(_, ensure_ascii=False) for _ in parsed_data], ensure_ascii=False)
         plugin.parameters["Credit Data"] = revert_data
         plugin.parameters["Command Name"] = "致谢名单"
-        self.logger.bind(filepath="SRD_CreditsPlugin").debug("Tweak game plugin successfully.")
+        Tweaker.logger.bind(filepath="SRD_CreditsPlugin").debug("Tweak game plugin successfully.")
         return plugin
-
-    @property
-    def logger(self) -> Logger:
-        return self._logger
 
 
 __all__ = [

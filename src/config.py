@@ -36,15 +36,15 @@ class FilepathSettings(BaseSettings):
 
     root: Path = Field(default=Path(__file__).parent.parent)
     data: Path = Field(default=Path("data"))
-    tmp: Path = Field(default=Path("data/tmp"))
-    log: Path = Field(default=Path("data/log"))
     dist: Path = Field(default=Path("dist"))
+    log: Path = Field(default=Path("data/log"))
     resource: Path = Field(default=Path("resource"))
     original: Path = Field(default=Path("resource/01-original"))
     convert: Path = Field(default=Path("resource/02-paratranz/convert"))
     download: Path = Field(default=Path("resource/02-paratranz/download"))
     result: Path = Field(default=Path("resource/03-result"))
     special: Path = Field(default=Path("resource/04-special-file"))
+    tmp: Path = Field(default=Path("data/tmp"))
 
 
 class GameSettings(BaseSettings):
@@ -90,7 +90,7 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-GAME_ROOT = settings.filepath.root / settings.filepath.original / f"{settings.game.name} v{settings.game.version}"
+GAME_ROOT = settings.filepath.root / settings.filepath.original / f"{settings.game.name} v{settings.game.version} (PC)"
 DIR_CONVERT = settings.filepath.root / settings.filepath.convert
 DIR_DOWNLOAD = settings.filepath.root / settings.filepath.download
 DIR_RESULT = settings.filepath.root / settings.filepath.result
