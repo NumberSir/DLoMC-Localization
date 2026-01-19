@@ -137,6 +137,9 @@
    - 最好将游戏原文件复制一份到其他地方，单独覆盖游玩，保留 `./resource/01-original` 中的游戏原文件供文本提取用
 9. `./dist` 中会生成结果的压缩包。压缩包末尾的两个数字分别为万分之翻译进度和万分之审核进度
 
+# 备注
+理论上本脚本可以提取所有基于 RPG Maker MV 引擎制作的游戏的文本，但尚未进行测试。
+
 
 [SubscribeStar]: https://subscribestar.adult/
 [Python]: https://www.python.org/downloads/

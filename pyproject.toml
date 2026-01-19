@@ -3,7 +3,7 @@ name = "dlomc-localization"
 version = "0.0.1-alpha"
 description = "Chinese localization of Daily Lives of My Contryside."
 authors = [{ name = "Number_Sir", email = "number_sir@126.com" }]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "MIT" }
 maintainers = [{ name = "Number_Sir", email = "number_sir@126.com" }]
