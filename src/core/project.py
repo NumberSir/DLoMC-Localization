@@ -3,11 +3,12 @@ import json
 import shutil
 from contextlib import suppress
 from pathlib import Path
-from zipfile import ZipFile as zf, ZIP_DEFLATED
+from zipfile import ZIP_DEFLATED
+from zipfile import ZipFile as zf
 
 from loguru._logger import Logger
 
-from src.config import settings, DIR_RESULT
+from src.config import DIR_RESULT, settings
 from src.core.paratranz import Paratranz
 from src.log import logger
 from src.schema.enum import FileType
@@ -27,7 +28,7 @@ class Project:
 			with suppress(FileNotFoundError):
 				shutil.rmtree(filepath)
 			filepath.mkdir(exist_ok=True, parents=True)
-			Project.logger.bind(filepath=filepath).debug("Filepath cleaned")
+			Project.logger.bind(filepath=filepath).success("Filepath cleaned")
 
 	@staticmethod
 	def categorize(filepath: Path) -> FileType | None:
