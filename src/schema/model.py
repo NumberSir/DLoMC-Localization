@@ -21,7 +21,7 @@ class ParatranzModel(_BaseModelAllowExtra):
     stage: Optional[int] = Field(default=0)
 
     def untranslated(self) -> bool:
-        return not self.translation or self.translation == self.original
+        return (self.translation != '') or self.translation == self.original
 
 
 class ParatranzProjectStatModel(_BaseModelAllowExtra):

@@ -4,22 +4,14 @@ import shutil
 from pathlib import Path
 from typing import Callable
 
-from loguru._logger import Logger
 from pydantic import BaseModel
 
 from src.config import DIR_DOWNLOAD, DIR_RESULT, DIR_SPECIAL, GAME_ROOT
 from src.core.project import Project
 from src.log import logger
-from src.schema.enum import FileType, Code
-from src.schema.model import (
-    ParatranzModel,
-    GameMapModel,
-    GameSystemModel,
-    GameItemModel,
-    GameSkillModel,
-    GameMapInfoModel,
-    GameCommonEventModel
-)
+from src.schema.enum import Code, FileType
+from src.schema.model import (GameCommonEventModel, GameItemModel, GameMapInfoModel, GameMapModel, GameSkillModel,
+                              GameSystemModel, ParatranzModel)
 
 
 class Restorer:
@@ -35,6 +27,9 @@ class Restorer:
                 continue
 
             relative_filepath = filepath.relative_to(DIR_DOWNLOAD)
+            if relative_filepath.parts[0] != 'www':
+                continue
+
             result_filepath = DIR_RESULT / relative_filepath.with_suffix("")
             file_type = Project.categorize(result_filepath)
             if not file_type:
