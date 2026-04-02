@@ -3,8 +3,10 @@
 /.venv/
 
 /data/
-/resource/
+/dist/
+/resource/01-original/
+/resource/02-paratranz/
+/resource/03-result/
 
 .env
-poetry.lock
-/target/
+uv.lock
