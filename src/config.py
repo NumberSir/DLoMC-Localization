@@ -90,7 +90,7 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-GAME_ROOT = settings.filepath.root / settings.filepath.original / f"{settings.game.name} v{settings.game.version} (PC)"
+GAME_ROOT = settings.filepath.root / settings.filepath.original / f"{settings.game.name} v{settings.game.version} (PC) (Full)"
 DIR_CONVERT = settings.filepath.root / settings.filepath.convert
 DIR_DOWNLOAD = settings.filepath.root / settings.filepath.download
 DIR_RESULT = settings.filepath.root / settings.filepath.result
