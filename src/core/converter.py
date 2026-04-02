@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 from typing import Callable
 
-from loguru._logger import Logger
 from pydantic import BaseModel
 
 from src.config import DIR_CONVERT, DIR_DOWNLOAD, GAME_ROOT
@@ -139,7 +138,8 @@ class Converter:
 				ParatranzModel(
 					key=id_,
 					original=quest,
-					translation=(translation_mapping.get(id_, "") if translation_flag else "").translation if translation_mapping.get(id_) else ""  # noqa
+					translation=(translation_mapping.get(id_, "") if translation_flag else "").translation if translation_mapping.get(id_) else "",  # noqa
+					stage=(translation_mapping.get(id_, "") if translation_flag else "").stage if translation_mapping.get(id_) else 0,
 				)
 				for quest, id_ in quests
 			]
@@ -166,11 +166,14 @@ class Converter:
 
 			display_name_translation = translation_mapping.get("displayName", "") if translation_flag else ""
 			display_name_translation = display_name_translation.translation if display_name_translation else ""
+			display_name_stage = translation_mapping.get("displayName", 0) if translation_flag else 0
+			display_name_stage = display_name_stage.stage if display_name_stage else 0
 			models = [
 				ParatranzModel(
 					key="displayName",
 					original=original.displayName,
-					translation=display_name_translation
+					translation=display_name_translation,
+					stage=display_name_stage
 				)
 			]
 			for idx_event, event in enumerate(original.events):
@@ -217,12 +220,18 @@ class Converter:
 						else:
 							flag_conversation, flag_choice = False, False
 							continue
-
+						translation_stage = [
+							model.stage
+							for model in translation
+							if model.original == original_value
+						] if translation_flag else 0
+						translation_stage = translation_stage[0] if translation_stage else 0
 						model = ParatranzModel(
 							key=key,
 							original=original_value,
 							translation=translation_value,
 							context=context_conversation.strip() if Code.DIALOG == unit_code else context_choice.strip(),
+							stage=translation_stage
 						)
 						model.context = f'{display_name_translation or original.displayName}\n{model.context}'
 						models.append(model)
@@ -292,12 +301,19 @@ class Converter:
 						flag_conversation, flag_choice = False, False
 						continue
 
+					translation_stage = [
+						model.stage
+						for model in translation
+						if model.original == original_value
+					] if translation_flag else 0
+					translation_stage = translation_stage[0] if translation_stage else 0
 					models.append(
 						ParatranzModel(
 							key=f"{event_id} | {event_name} | {idx_unit} | {unit.code}",
 							original=original_value,
 							translation=translation_value,
 							context=context_conversation.strip() if Code.DIALOG == unit.code else context_choice.strip(),
+							stage=translation_stage
 						)
 					)
 			return models
@@ -324,17 +340,20 @@ class Converter:
 			models = []
 			game_title_original = original.gameTitle
 			game_title_translation = translation_mapping["gameTitle"].translation if translation_flag else ""
+			game_title_stage = translation_mapping["gameTitle"].stage if translation_flag else 0
 			models.append(
 				ParatranzModel(
 					key="gameTitle",
 					original=game_title_original,
-					translation=game_title_translation
+					translation=game_title_translation,
+					stage=game_title_stage
 				)
 			)
 
 			locale_original = original.locale
 			locale_translation = translation_mapping["locale"].translation if translation_flag else ""
-			models.append(ParatranzModel(key="locale", original=locale_original, translation=locale_translation))
+			locale_stage = translation_mapping["locale"].stage if translation_flag else 0
+			models.append(ParatranzModel(key="locale", original=locale_original, translation=locale_translation, stage=locale_stage))
 
 			def _convert_lists(list_: list, key_prefix: str, models_: list):
 				for idx_, item in enumerate(list_):
@@ -349,7 +368,13 @@ class Converter:
 						if model.original == original_
 					] if translation_flag else ""
 					translation_ = translation_[0] if translation_ else ""
-					models_.append(ParatranzModel(key=key_, original=original_, translation=translation_))
+					stage_ = [
+						model.stage
+						for model in translation
+						if model.original == original_
+					] if translation_flag else 0
+					stage_ = stage_[0] if stage_ else 0
+					models_.append(ParatranzModel(key=key_, original=original_, translation=translation_, stage=stage_))
 				return models_
 
 			models = _convert_lists(original.skillTypes, "skillTypes", models)
@@ -362,11 +387,14 @@ class Converter:
 				message_original = value
 				message_translation = translation_mapping.get(key, "") if translation_flag else ""
 				message_translation = message_translation.translation if message_translation else ""
+				message_stage = translation_mapping.get(key, 0) if translation_flag else 0
+				message_stage = message_stage.stage if message_stage else 0
 				models.append(
 					ParatranzModel(
 						key=f"terms | messages | {key}",
 						original=message_original,
-						translation=message_translation
+						translation=message_translation,
+						stage=message_stage
 					)
 				)
 
@@ -393,24 +421,30 @@ class Converter:
 					key = f"{element.id} | name"
 					translation_value = translation_mapping.get(key, "") if translation_flag else ""
 					translation_value = translation_value.translation if translation_value else ""
+					stage_value = translation_mapping.get(key, 0) if translation_flag else 0
+					stage_value = stage_value.stage if stage_value else 0
 					models.append(
 						ParatranzModel(
 							key=key,
 							original=element.name,
 							translation=translation_value,
-							context=f"{element.id} | {element.name}\n{element.description}"
+							context=f"{element.id} | {element.name}\n{element.description}",
+							stage=stage_value
 						)
 					)
 				if element.description:
 					key = f"{element.id} | description"
 					translation_value = translation_mapping.get(key, "") if translation_flag else ""
 					translation_value = translation_value.translation if translation_value else ""
+					stage_value = translation_mapping.get(key, 0) if translation_flag else 0
+					stage_value = stage_value.stage if stage_value else 0
 					models.append(
 						ParatranzModel(
 							key=key,
 							original=element.description,
 							translation=translation_value,
-							context=f"{element.id} | {element.name}\n{element.description}"
+							context=f"{element.id} | {element.name}\n{element.description}",
+							stage=stage_value
 						)
 					)
 			return models
@@ -453,9 +487,9 @@ class Converter:
 				GameMapInfoModel.model_validate(_)
 				if _ is not None else None
 				for _ in kwargs["original"]
-			]
+			]  # 一般情况下, original 比 translation 内容多 (length 112)
 			translation_flag = kwargs["translation_flag"]
-			translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]
+			translation_mapping: dict[str, ParatranzModel] | None = kwargs["translation_mapping"]  # length 108
 
 			models = []
 			for idx, info in enumerate(original):
@@ -463,8 +497,10 @@ class Converter:
 					continue
 
 				translation_value = translation_mapping.get(info.id.__str__(), "") if translation_flag else ""
-				translation_value = translation_value.translation if translation_flag else ""
-				models.append(ParatranzModel(key=info.id.__str__(), original=info.name, translation=translation_value))
+				translation_value = translation_value.translation if translation_value else ""
+				stage_value = translation_mapping.get(info.id.__str__(), 0) if translation_flag else 0
+				stage_value = stage_value.stage if stage_value else 0
+				models.append(ParatranzModel(key=info.id.__str__(), original=info.name, translation=translation_value, stage=stage_value))
 
 			return models
 
