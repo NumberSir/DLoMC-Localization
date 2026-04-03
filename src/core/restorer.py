@@ -162,7 +162,11 @@ class Restorer:
                             elif Code.CHOICE == unit.code == unit_code:
                                 if model.original != "\n".join(unit.parameters[0]):
                                     continue
-                                original.events[idx_event].pages[idx_page_].list[idx_unit_].parameters[0] = model.translation.split("\n")  # noqa: E501
+                                result_ = [
+                                    _ or model.original.split("\n")[idx]
+                                    for idx, _ in enumerate(model.translation.split("\n"))
+                                ]
+                                original.events[idx_event].pages[idx_page_].list[idx_unit_].parameters[0] = result_  # noqa: E501
 
             return original
 
@@ -326,7 +330,11 @@ class Restorer:
                         elif Code.CHOICE == unit.code == unit_code:
                             if model.original != "\n".join(unit.parameters[0]):
                                 continue
-                            original[idx_event].list[idx_unit_].parameters[0] = model.translation.split("\n")
+                            result_ = [
+                                _ or model.original.split("\n")[idx]
+                                for idx, _ in enumerate(model.translation.split("\n"))
+                            ]
+                            original[idx_event].list[idx_unit_].parameters[0] = result_
 
             return original
 
